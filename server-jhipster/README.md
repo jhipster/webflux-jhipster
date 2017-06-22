@@ -1,9 +1,2 @@
-JHipster server-side library
+Temporary JHipster server-side library (1.6.6.1 instead of real release 1.6.6)
 ----------------------------
-
-[![Build Status][travis-image]][travis-url] [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.jhipster/jhipster/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.jhipster/jhipster)
-
-This project is used by the JHipster generator, for more information, issues or questions, please go to [jhipster/generator-jhipster](https://github.com/jhipster/generator-jhipster).
-
-[travis-image]: https://travis-ci.org/jhipster/jhipster.svg?branch=master
-[travis-url]: https://travis-ci.org/jhipster/jhipster
