@@ -11,6 +11,7 @@
   <modules>
     <module>server-jhipster</module>
     <module>defaultSample</module>
+    <module>reactiveMongoDB</module>
   </modules>
 
   <properties>
