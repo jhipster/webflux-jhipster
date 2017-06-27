@@ -1,8 +1,8 @@
 package jhipster.reactive.web.rest.vm;
 
 import jhipster.reactive.service.dto.UserDTO;
-import javax.validation.constraints.Size;
 
+import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Set;
 
