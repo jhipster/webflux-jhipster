@@ -9,9 +9,6 @@ import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 import { Operation } from './operation.model';
 import { OperationPopupService } from './operation-popup.service';
 import { OperationService } from './operation.service';
-import { BankAccount, BankAccountService } from '../bank-account';
-import { Label, LabelService } from '../label';
-import { ResponseWrapper } from '../../shared';
 
 @Component({
     selector: 'jhi-operation-dialog',
@@ -23,16 +20,10 @@ export class OperationDialogComponent implements OnInit {
     authorities: any[];
     isSaving: boolean;
 
-    bankaccounts: BankAccount[];
-
-    labels: Label[];
-
     constructor(
         public activeModal: NgbActiveModal,
         private alertService: JhiAlertService,
         private operationService: OperationService,
-        private bankAccountService: BankAccountService,
-        private labelService: LabelService,
         private eventManager: JhiEventManager
     ) {
     }
@@ -40,10 +31,6 @@ export class OperationDialogComponent implements OnInit {
     ngOnInit() {
         this.isSaving = false;
         this.authorities = ['ROLE_USER', 'ROLE_ADMIN'];
-        this.bankAccountService.query()
-            .subscribe((res: ResponseWrapper) => { this.bankaccounts = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
-        this.labelService.query()
-            .subscribe((res: ResponseWrapper) => { this.labels = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
     }
 
     clear() {
@@ -84,25 +71,6 @@ export class OperationDialogComponent implements OnInit {
 
     private onError(error) {
         this.alertService.error(error.message, null, null);
-    }
-
-    trackBankAccountById(index: number, item: BankAccount) {
-        return item.id;
-    }
-
-    trackLabelById(index: number, item: Label) {
-        return item.id;
-    }
-
-    getSelected(selectedVals: Array<any>, option: any) {
-        if (selectedVals) {
-            for (let i = 0; i < selectedVals.length; i++) {
-                if (option.id === selectedVals[i].id) {
-                    return selectedVals[i];
-                }
-            }
-        }
-        return option;
     }
 }
 

@@ -20,7 +20,6 @@
             <th jhiSortBy="date"><span>Date</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="description"><span>Description</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="amount"><span>Amount</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="bankAccount.name"><span>Bank Account</span> <span class="fa fa-sort"></span></th>
             <th></th>
             </tr>
             </thead>
@@ -30,11 +29,6 @@
                 <td>{{operation.date | date:'medium'}}</td>
                 <td>{{operation.description}}</td>
                 <td>{{operation.amount}}</td>
-                <td>
-                    <div *ngIf="operation.bankAccount">
-                        <a [routerLink]="['../bank-account', operation.bankAccount?.id ]" >{{operation.bankAccount?.name}}</a>
-                    </div>
-                </td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">
                         <button type="submit"

@@ -124,7 +124,7 @@ public class UserService {
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = new HashSet<>();
             userDTO.getAuthorities().forEach(
-                authority -> authorities.add(authorityRepository.findById(authority))
+                authority -> authorityRepository.findById(authority).ifPresent(authorities::add)
             );
             user.setAuthorities(authorities);
         }
@@ -178,7 +178,7 @@ public class UserService {
             managedAuthorities.clear();
             userDTO.getAuthorities().stream()
                 .map(authorityRepository::findById)
-                .forEach(autho -> autho.ifPresent(managedAuthorities::add));
+                .forEach(authority -> authority.ifPresent(managedAuthorities::add));
             userRepository.save(user);
             log.debug("Changed Information for User: {}", user);
             return user;
@@ -209,8 +209,8 @@ public class UserService {
         return userRepository.findOneByLogin(login);
     }
 
-    public User getUserWithAuthorities(String id) {
-        return userRepository.getOne(id);
+    public Optional<User> getUserWithAuthorities(String id) {
+        return userRepository.findById(id);
     }
 
     public User getUserWithAuthorities() {

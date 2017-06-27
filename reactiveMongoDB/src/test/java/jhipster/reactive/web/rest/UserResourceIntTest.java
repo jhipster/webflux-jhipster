@@ -12,6 +12,7 @@ import jhipster.reactive.service.mapper.UserMapper;
 import jhipster.reactive.web.rest.errors.ExceptionTranslator;
 import jhipster.reactive.web.rest.vm.ManagedUserVM;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,17 +27,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -324,24 +324,24 @@ public class UserResourceIntTest {
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
-        User updatedUser = userRepository.findOne(user.getId());
-
+        Optional<User> updatedUser = userRepository.findById(user.getId());
+        Assert.assertTrue(updatedUser.isPresent());
         Set<String> authorities = new HashSet<>();
         authorities.add("ROLE_USER");
         ManagedUserVM managedUserVM = new ManagedUserVM(
-            updatedUser.getId(),
-            updatedUser.getLogin(),
+            updatedUser.get().getId(),
+            updatedUser.get().getLogin(),
             UPDATED_PASSWORD,
             UPDATED_FIRSTNAME,
             UPDATED_LASTNAME,
             UPDATED_EMAIL,
-            updatedUser.getActivated(),
+            updatedUser.get().getActivated(),
             UPDATED_IMAGEURL,
             UPDATED_LANGKEY,
-            updatedUser.getCreatedBy(),
-            updatedUser.getCreatedDate(),
-            updatedUser.getLastModifiedBy(),
-            updatedUser.getLastModifiedDate(),
+            updatedUser.get().getCreatedBy(),
+            updatedUser.get().getCreatedDate(),
+            updatedUser.get().getLastModifiedBy(),
+            updatedUser.get().getLastModifiedDate(),
             authorities);
 
         restUserMockMvc.perform(put("/api/users")
@@ -367,24 +367,25 @@ public class UserResourceIntTest {
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
-        User updatedUser = userRepository.findOne(user.getId());
+        Optional<User> updatedUser = userRepository.findById(user.getId());
+        Assert.assertTrue(updatedUser.isPresent());
 
         Set<String> authorities = new HashSet<>();
         authorities.add("ROLE_USER");
         ManagedUserVM managedUserVM = new ManagedUserVM(
-            updatedUser.getId(),
+            updatedUser.get().getId(),
             UPDATED_LOGIN,
             UPDATED_PASSWORD,
             UPDATED_FIRSTNAME,
             UPDATED_LASTNAME,
             UPDATED_EMAIL,
-            updatedUser.getActivated(),
+            updatedUser.get().getActivated(),
             UPDATED_IMAGEURL,
             UPDATED_LANGKEY,
-            updatedUser.getCreatedBy(),
-            updatedUser.getCreatedDate(),
-            updatedUser.getLastModifiedBy(),
-            updatedUser.getLastModifiedDate(),
+            updatedUser.get().getCreatedBy(),
+            updatedUser.get().getCreatedDate(),
+            updatedUser.get().getLastModifiedBy(),
+            updatedUser.get().getLastModifiedDate(),
             authorities);
 
         restUserMockMvc.perform(put("/api/users")
@@ -421,24 +422,25 @@ public class UserResourceIntTest {
         userRepository.save(anotherUser);
 
         // Update the user
-        User updatedUser = userRepository.findOne(user.getId());
+        Optional<User> updatedUser = userRepository.findById(user.getId());
+        Assert.assertTrue(updatedUser.isPresent());
 
         Set<String> authorities = new HashSet<>();
         authorities.add("ROLE_USER");
         ManagedUserVM managedUserVM = new ManagedUserVM(
-            updatedUser.getId(),
-            updatedUser.getLogin(),
-            updatedUser.getPassword(),
-            updatedUser.getFirstName(),
-            updatedUser.getLastName(),
+            updatedUser.get().getId(),
+            updatedUser.get().getLogin(),
+            updatedUser.get().getPassword(),
+            updatedUser.get().getFirstName(),
+            updatedUser.get().getLastName(),
             "jhipster@localhost",  // this email should already be used by anotherUser
-            updatedUser.getActivated(),
-            updatedUser.getImageUrl(),
-            updatedUser.getLangKey(),
-            updatedUser.getCreatedBy(),
-            updatedUser.getCreatedDate(),
-            updatedUser.getLastModifiedBy(),
-            updatedUser.getLastModifiedDate(),
+            updatedUser.get().getActivated(),
+            updatedUser.get().getImageUrl(),
+            updatedUser.get().getLangKey(),
+            updatedUser.get().getCreatedBy(),
+            updatedUser.get().getCreatedDate(),
+            updatedUser.get().getLastModifiedBy(),
+            updatedUser.get().getLastModifiedDate(),
             authorities);
 
         restUserMockMvc.perform(put("/api/users")
@@ -464,24 +466,25 @@ public class UserResourceIntTest {
         userRepository.save(anotherUser);
 
         // Update the user
-        User updatedUser = userRepository.findOne(user.getId());
+        Optional<User> updatedUser = userRepository.findById(user.getId());
+        Assert.assertTrue(updatedUser.isPresent());
 
         Set<String> authorities = new HashSet<>();
         authorities.add("ROLE_USER");
         ManagedUserVM managedUserVM = new ManagedUserVM(
-            updatedUser.getId(),
+            updatedUser.get().getId(),
             "jhipster", // this login should already be used by anotherUser
-            updatedUser.getPassword(),
-            updatedUser.getFirstName(),
-            updatedUser.getLastName(),
-            updatedUser.getEmail(),
-            updatedUser.getActivated(),
-            updatedUser.getImageUrl(),
-            updatedUser.getLangKey(),
-            updatedUser.getCreatedBy(),
-            updatedUser.getCreatedDate(),
-            updatedUser.getLastModifiedBy(),
-            updatedUser.getLastModifiedDate(),
+            updatedUser.get().getPassword(),
+            updatedUser.get().getFirstName(),
+            updatedUser.get().getLastName(),
+            updatedUser.get().getEmail(),
+            updatedUser.get().getActivated(),
+            updatedUser.get().getImageUrl(),
+            updatedUser.get().getLangKey(),
+            updatedUser.get().getCreatedBy(),
+            updatedUser.get().getCreatedDate(),
+            updatedUser.get().getLastModifiedBy(),
+            updatedUser.get().getLastModifiedDate(),
             authorities);
 
         restUserMockMvc.perform(put("/api/users")

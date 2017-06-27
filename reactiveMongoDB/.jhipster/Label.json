@@ -1,14 +1,4 @@
 {
-    "relationships": [
-        {
-            "relationshipId": 1,
-            "relationshipName": "operation",
-            "otherEntityName": "operation",
-            "relationshipType": "many-to-many",
-            "ownerSide": false,
-            "otherEntityRelationshipName": "label"
-        }
-    ],
     "fields": [
         {
             "fieldId": 1,

@@ -6,8 +6,6 @@ export class Operation implements BaseEntity {
         public date?: any,
         public description?: string,
         public amount?: number,
-        public bankAccount?: BaseEntity,
-        public labels?: BaseEntity[],
     ) {
     }
 }

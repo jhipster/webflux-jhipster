@@ -1,13 +1,12 @@
 package jhipster.reactive.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiParam;
 import jhipster.reactive.domain.Operation;
-
 import jhipster.reactive.repository.OperationRepository;
 import jhipster.reactive.web.rest.util.HeaderUtil;
 import jhipster.reactive.web.rest.util.PaginationUtil;
-import io.swagger.annotations.ApiParam;
-import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -108,8 +106,8 @@ public class OperationResource {
     @Timed
     public ResponseEntity<Operation> getOperation(@PathVariable String id) {
         log.debug("REST request to get Operation : {}", id);
-        Operation operation = operationRepository.findOneWithEagerRelationships(id);
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(operation));
+        Optional<Operation> operation = operationRepository.findById(id);
+        return ResponseUtil.wrapOrNotFound(operation);
     }
 
     /**

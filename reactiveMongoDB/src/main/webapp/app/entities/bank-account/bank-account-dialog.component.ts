@@ -9,8 +9,6 @@ import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 import { BankAccount } from './bank-account.model';
 import { BankAccountPopupService } from './bank-account-popup.service';
 import { BankAccountService } from './bank-account.service';
-import { User, UserService } from '../../shared';
-import { ResponseWrapper } from '../../shared';
 
 @Component({
     selector: 'jhi-bank-account-dialog',
@@ -22,13 +20,10 @@ export class BankAccountDialogComponent implements OnInit {
     authorities: any[];
     isSaving: boolean;
 
-    users: User[];
-
     constructor(
         public activeModal: NgbActiveModal,
         private alertService: JhiAlertService,
         private bankAccountService: BankAccountService,
-        private userService: UserService,
         private eventManager: JhiEventManager
     ) {
     }
@@ -36,8 +31,6 @@ export class BankAccountDialogComponent implements OnInit {
     ngOnInit() {
         this.isSaving = false;
         this.authorities = ['ROLE_USER', 'ROLE_ADMIN'];
-        this.userService.query()
-            .subscribe((res: ResponseWrapper) => { this.users = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
     }
 
     clear() {
@@ -78,10 +71,6 @@ export class BankAccountDialogComponent implements OnInit {
 
     private onError(error) {
         this.alertService.error(error.message, null, null);
-    }
-
-    trackUserById(index: number, item: User) {
-        return item.id;
     }
 }
 
