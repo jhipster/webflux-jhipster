@@ -99,8 +99,8 @@ public class LabelResource {
     @Timed
     public ResponseEntity<Label> getLabel(@PathVariable Long id) {
         log.debug("REST request to get Label : {}", id);
-        Label label = labelRepository.getOne(id);
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(label));
+        Optional<Label> label = labelRepository.findById(id);
+        return ResponseUtil.wrapOrNotFound(label);
     }
 
     /**
