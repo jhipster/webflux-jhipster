@@ -10,6 +10,7 @@
 
     <modules>
         <module>defaultSample</module>
+        <!-- TODO Add here your submodules in your own branches, but don't commit this file -->
     </modules>
 
     <properties>
