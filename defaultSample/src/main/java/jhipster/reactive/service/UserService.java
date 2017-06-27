@@ -84,7 +84,7 @@ public class UserService {
         String imageUrl, String langKey) {
 
         User newUser = new User();
-        Authority authority = authorityRepository.getOne(AuthoritiesConstants.USER);
+        Optional<Authority> authority = authorityRepository.findById(AuthoritiesConstants.USER);
         Set<Authority> authorities = new HashSet<>();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(login);
@@ -99,8 +99,10 @@ public class UserService {
         newUser.setActivated(false);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
-        authorities.add(authority);
-        newUser.setAuthorities(authorities);
+        if(authority.isPresent()) {
+            authorities.add(authority.get());
+            newUser.setAuthorities(authorities);
+        }
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
@@ -121,7 +123,7 @@ public class UserService {
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = new HashSet<>();
             userDTO.getAuthorities().forEach(
-                authority -> authorities.add(authorityRepository.getOne(authority))
+                authority -> authorityRepository.findById(authority).ifPresent(authorities::add)
             );
             user.setAuthorities(authorities);
         }
@@ -162,9 +164,7 @@ public class UserService {
      * @return updated user
      */
     public Optional<UserDTO> updateUser(UserDTO userDTO) {
-        return Optional.of(userRepository
-            .getOne(userDTO.getId()))
-            .map(user -> {
+        return userRepository.findById(userDTO.getId()).map(user -> {
                 user.setLogin(userDTO.getLogin());
                 user.setFirstName(userDTO.getFirstName());
                 user.setLastName(userDTO.getLastName());
@@ -175,8 +175,8 @@ public class UserService {
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
                 userDTO.getAuthorities().stream()
-                    .map(authorityRepository::getOne)
-                    .forEach(managedAuthorities::add);
+                    .map(authorityRepository::findById)
+                    .forEach(authority -> authority.ifPresent(managedAuthorities::add));
                 log.debug("Changed Information for User: {}", user);
                 return user;
             })

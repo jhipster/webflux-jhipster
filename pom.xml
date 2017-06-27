@@ -9,7 +9,6 @@
   <name>Multi Spring Bench Parent Project</name>
 
   <modules>
-    <module>server-jhipster</module>
     <module>defaultSample</module>
   </modules>
 
