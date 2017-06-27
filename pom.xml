@@ -9,15 +9,15 @@
     <name>Multi Spring Bench Parent Project</name>
 
     <modules>
-      <module>defaultSample</module>
+        <module>defaultSample</module>
     </modules>
 
     <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
-      <defaultGoal>package</defaultGoal>
+        <defaultGoal>package</defaultGoal>
     </build>
 
 </project>
