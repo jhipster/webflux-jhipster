@@ -1,21 +1,4 @@
 {
-    "relationships": [
-        {
-            "relationshipId": 1,
-            "relationshipName": "bankAccount",
-            "otherEntityName": "bankAccount",
-            "relationshipType": "many-to-one",
-            "otherEntityField": "name"
-        },
-        {
-            "relationshipId": 2,
-            "relationshipName": "label",
-            "otherEntityName": "label",
-            "relationshipType": "many-to-many",
-            "otherEntityField": "label",
-            "ownerSide": true
-        }
-    ],
     "fields": [
         {
             "fieldId": 1,

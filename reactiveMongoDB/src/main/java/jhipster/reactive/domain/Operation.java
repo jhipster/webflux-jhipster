@@ -7,8 +7,6 @@ import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -31,15 +29,6 @@ public class Operation implements Serializable {
     @NotNull
     @Field("amount")
     private BigDecimal amount;
-
-    @ManyToOne
-    private BankAccount bankAccount;
-
-    @ManyToMany
-    @JoinTable(name = "operation_label",
-               joinColumns = @JoinColumn(name="operations_id", referencedColumnName="id"),
-               inverseJoinColumns = @JoinColumn(name="labels_id", referencedColumnName="id"))
-    private Set<Label> labels = new HashSet<>();
 
     public String getId() {
         return id;
@@ -73,22 +62,6 @@ public class Operation implements Serializable {
         this.amount = amount;
     }
 
-    public BankAccount getBankAccount() {
-        return bankAccount;
-    }
-
-    public void setBankAccount(BankAccount bankAccount) {
-        this.bankAccount = bankAccount;
-    }
-
-    public Set<Label> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Set<Label> labels) {
-        this.labels = labels;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -98,10 +71,7 @@ public class Operation implements Serializable {
             return false;
         }
         Operation operation = (Operation) o;
-        if (operation.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), operation.getId());
+        return !(operation.getId() == null || getId() == null) && Objects.equals(getId(), operation.getId());
     }
 
     @Override

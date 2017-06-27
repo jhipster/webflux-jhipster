@@ -5,8 +5,6 @@ export class BankAccount implements BaseEntity {
         public id?: string,
         public name?: string,
         public balance?: number,
-        public user?: User,
-        public operations?: BaseEntity[],
     ) {
     }
 }

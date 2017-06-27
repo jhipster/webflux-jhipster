@@ -16,18 +16,6 @@
         <dd>
             <span>{{operation.amount}}</span>
         </dd>
-        <dt><span>Bank Account</span></dt>
-        <dd>
-            <div *ngIf="operation.bankAccount">
-                <a [routerLink]="['/bank-account', operation.bankAccount?.id]">{{operation.bankAccount?.name}}</a>
-            </div>
-        </dd>
-        <dt><span>Label</span></dt>
-        <dd>
-            <span *ngFor="let label of operation.labels; let last = last">
-                <a [routerLink]="['/label', label?.id ]">{{label.label}}</a>{{last ? '' : ', '}}
-            </span>
-        </dd>
     </dl>
 
     <button type="submit"

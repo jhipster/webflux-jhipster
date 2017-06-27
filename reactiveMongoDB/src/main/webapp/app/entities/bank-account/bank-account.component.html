@@ -19,7 +19,6 @@
             <th><span>ID</span></th>
             <th><span>Name</span></th>
             <th><span>Balance</span></th>
-            <th><span>User</span></th>
             <th></th>
             </tr>
             </thead>
@@ -28,9 +27,6 @@
                 <td><a [routerLink]="['../bank-account', bankAccount.id ]">{{bankAccount.id}}</a></td>
                 <td>{{bankAccount.name}}</td>
                 <td>{{bankAccount.balance}}</td>
-                <td>
-                    {{bankAccount.user?.login}}
-                </td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">
                         <button type="submit"

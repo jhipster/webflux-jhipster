@@ -6,6 +6,7 @@ import jhipster.reactive.domain.Label;
 import jhipster.reactive.repository.LabelRepository;
 import jhipster.reactive.web.rest.errors.ExceptionTranslator;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -174,12 +176,13 @@ public class LabelResourceIntTest {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
 
         // Update the label
-        Label updatedLabel = labelRepository.findOne(label.getId());
-        updatedLabel.setLabel(UPDATED_LABEL);
+        Optional<Label> updatedLabel = labelRepository.findById(label.getId());
+        Assert.assertTrue(updatedLabel.isPresent());
+        updatedLabel.get().setLabel(UPDATED_LABEL);
 
         restLabelMockMvc.perform(put("/api/labels")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(updatedLabel)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedLabel.get())))
             .andExpect(status().isOk());
 
         // Validate the Label in the database

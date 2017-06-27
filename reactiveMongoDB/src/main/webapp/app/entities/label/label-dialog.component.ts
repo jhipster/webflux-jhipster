@@ -9,8 +9,6 @@ import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 import { Label } from './label.model';
 import { LabelPopupService } from './label-popup.service';
 import { LabelService } from './label.service';
-import { Operation, OperationService } from '../operation';
-import { ResponseWrapper } from '../../shared';
 
 @Component({
     selector: 'jhi-label-dialog',
@@ -22,13 +20,10 @@ export class LabelDialogComponent implements OnInit {
     authorities: any[];
     isSaving: boolean;
 
-    operations: Operation[];
-
     constructor(
         public activeModal: NgbActiveModal,
         private alertService: JhiAlertService,
         private labelService: LabelService,
-        private operationService: OperationService,
         private eventManager: JhiEventManager
     ) {
     }
@@ -36,8 +31,6 @@ export class LabelDialogComponent implements OnInit {
     ngOnInit() {
         this.isSaving = false;
         this.authorities = ['ROLE_USER', 'ROLE_ADMIN'];
-        this.operationService.query()
-            .subscribe((res: ResponseWrapper) => { this.operations = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
     }
 
     clear() {
@@ -78,21 +71,6 @@ export class LabelDialogComponent implements OnInit {
 
     private onError(error) {
         this.alertService.error(error.message, null, null);
-    }
-
-    trackOperationById(index: number, item: Operation) {
-        return item.id;
-    }
-
-    getSelected(selectedVals: Array<any>, option: any) {
-        if (selectedVals) {
-            for (let i = 0; i < selectedVals.length; i++) {
-                if (option.id === selectedVals[i].id) {
-                    return selectedVals[i];
-                }
-            }
-        }
-        return option;
     }
 }
 

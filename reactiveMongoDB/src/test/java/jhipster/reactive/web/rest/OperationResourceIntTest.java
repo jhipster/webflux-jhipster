@@ -23,9 +23,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -208,14 +210,15 @@ public class OperationResourceIntTest {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
 
         // Update the operation
-        Operation updatedOperation = operationRepository.findOne(operation.getId());
-        updatedOperation.setDate(UPDATED_DATE);
-        updatedOperation.setDescription(UPDATED_DESCRIPTION);
-        updatedOperation.setAmount(UPDATED_AMOUNT);
+        Optional<Operation> updatedOperation = operationRepository.findById(operation.getId());
+        assertTrue(updatedOperation.isPresent());
+        updatedOperation.get().setDate(UPDATED_DATE);
+        updatedOperation.get().setDescription(UPDATED_DESCRIPTION);
+        updatedOperation.get().setAmount(UPDATED_AMOUNT);
 
         restOperationMockMvc.perform(put("/api/operations")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(updatedOperation)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedOperation.get())))
             .andExpect(status().isOk());
 
         // Validate the Operation in the database

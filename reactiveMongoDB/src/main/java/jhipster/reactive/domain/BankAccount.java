@@ -1,14 +1,11 @@
 package jhipster.reactive.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -28,13 +25,6 @@ public class BankAccount implements Serializable {
     @NotNull
     @Field("balance")
     private BigDecimal balance;
-
-    @ManyToOne
-    private User user;
-
-    @OneToMany(mappedBy = "bankAccount")
-    @JsonIgnore
-    private Set<Operation> operations = new HashSet<>();
 
     public String getId() {
         return id;
@@ -58,22 +48,6 @@ public class BankAccount implements Serializable {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<Operation> getOperations() {
-        return operations;
-    }
-
-    public void setOperations(Set<Operation> operations) {
-        this.operations = operations;
     }
 
     @Override

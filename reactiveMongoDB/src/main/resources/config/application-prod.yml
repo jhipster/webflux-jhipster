@@ -21,8 +21,8 @@ spring:
             enabled: false
     data:
         mongodb:
-            uri: mongodb://localhost:27017
-            database: reactiveMongoDB
+            uri: mongodb://free_data:free_data@ds139122.mlab.com:39122/heroku_nf51fjqb
+            database: heroku_nf51fjqb
     mail:
         host: localhost
         port: 25
@@ -104,5 +104,3 @@ jhipster:
 # More documentation is available at:
 # https://jhipster.github.io/common-application-properties/
 # ===================================================================
-
-application:

@@ -21,9 +21,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -199,13 +201,14 @@ public class BankAccountResourceIntTest {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
 
         // Update the bankAccount
-        BankAccount updatedBankAccount = bankAccountRepository.getOne(bankAccount.getId());
-        updatedBankAccount.setName(UPDATED_NAME);
-        updatedBankAccount.setBalance(UPDATED_BALANCE);
+        Optional<BankAccount> updatedBankAccount = bankAccountRepository.findById(bankAccount.getId());
+        assertTrue(updatedBankAccount.isPresent());
+        updatedBankAccount.get().setName(UPDATED_NAME);
+        updatedBankAccount.get().setBalance(UPDATED_BALANCE);
 
         restBankAccountMockMvc.perform(put("/api/bank-accounts")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(updatedBankAccount)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedBankAccount.get())))
             .andExpect(status().isOk());
 
         // Validate the BankAccount in the database
