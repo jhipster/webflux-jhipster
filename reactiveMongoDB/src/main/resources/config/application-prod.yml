@@ -21,8 +21,8 @@ spring:
             enabled: false
     data:
         mongodb:
-            uri: mongodb://free_data:free_data@ds139122.mlab.com:39122/heroku_nf51fjqb
-            database: heroku_nf51fjqb
+            uri: mongodb://localhost:27017
+            database: reactiveMongoDB
     mail:
         host: localhost
         port: 25
