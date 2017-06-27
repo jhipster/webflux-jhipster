@@ -1,20 +1,21 @@
 package jhipster.reactive.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import jhipster.reactive.domain.BankAccount;
-
-import jhipster.reactive.repository.BankAccountRepository;
-import jhipster.reactive.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import jhipster.reactive.domain.BankAccount;
+import jhipster.reactive.repository.BankAccountRepository;
+import jhipster.reactive.web.rest.util.AsyncUtil;
+import jhipster.reactive.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,9 @@ public class BankAccountResource {
 
     private final BankAccountRepository bankAccountRepository;
 
+    @Autowired
+    private AsyncUtil asyncUtil;
+
     public BankAccountResource(BankAccountRepository bankAccountRepository) {
         this.bankAccountRepository = bankAccountRepository;
     }
@@ -44,15 +48,17 @@ public class BankAccountResource {
      */
     @PostMapping("/bank-accounts")
     @Timed
-    public ResponseEntity<BankAccount> createBankAccount(@Valid @RequestBody BankAccount bankAccount) throws URISyntaxException {
+    public Mono<ResponseEntity<BankAccount>> createBankAccount(@Valid @RequestBody BankAccount bankAccount) throws URISyntaxException {
         log.debug("REST request to save BankAccount : {}", bankAccount);
-        if (bankAccount.getId() != null) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new bankAccount cannot already have an ID")).body(null);
-        }
-        BankAccount result = bankAccountRepository.save(bankAccount);
-        return ResponseEntity.created(new URI("/api/bank-accounts/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return asyncUtil.async(() -> {
+            if (bankAccount.getId() != null) {
+                return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new bankAccount cannot already have an ID")).body(null);
+            }
+            BankAccount result = bankAccountRepository.save(bankAccount);
+            return ResponseEntity.created(new URI("/api/bank-accounts/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId()))
+                .body(result);
+        });
     }
 
     /**
@@ -66,15 +72,17 @@ public class BankAccountResource {
      */
     @PutMapping("/bank-accounts")
     @Timed
-    public ResponseEntity<BankAccount> updateBankAccount(@Valid @RequestBody BankAccount bankAccount) throws URISyntaxException {
+    public Mono<ResponseEntity<BankAccount>> updateBankAccount(@Valid @RequestBody BankAccount bankAccount) throws URISyntaxException {
         log.debug("REST request to update BankAccount : {}", bankAccount);
         if (bankAccount.getId() == null) {
             return createBankAccount(bankAccount);
         }
-        BankAccount result = bankAccountRepository.save(bankAccount);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bankAccount.getId().toString()))
-            .body(result);
+        return asyncUtil.async(() -> {
+            BankAccount result = bankAccountRepository.save(bankAccount);
+            return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bankAccount.getId()))
+                .body(result);
+        });
     }
 
     /**
@@ -84,9 +92,9 @@ public class BankAccountResource {
      */
     @GetMapping("/bank-accounts")
     @Timed
-    public List<BankAccount> getAllBankAccounts() {
+    public Mono<List<BankAccount>> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
-        return bankAccountRepository.findAll();
+        return asyncUtil.async(bankAccountRepository::findAll);
     }
 
     /**
@@ -97,10 +105,12 @@ public class BankAccountResource {
      */
     @GetMapping("/bank-accounts/{id}")
     @Timed
-    public ResponseEntity<BankAccount> getBankAccount(@PathVariable String id) {
+    public Mono<ResponseEntity<BankAccount>> getBankAccount(@PathVariable String id) {
         log.debug("REST request to get BankAccount : {}", id);
-        Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(bankAccount);
+        return asyncUtil.async(() -> {
+            Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
+            return ResponseUtil.wrapOrNotFound(bankAccount);
+        });
     }
 
     /**
@@ -111,9 +121,11 @@ public class BankAccountResource {
      */
     @DeleteMapping("/bank-accounts/{id}")
     @Timed
-    public ResponseEntity<Void> deleteBankAccount(@PathVariable String id) {
+    public Mono<ResponseEntity<Void>> deleteBankAccount(@PathVariable String id) {
         log.debug("REST request to delete BankAccount : {}", id);
-        bankAccountRepository.deleteById(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+        return asyncUtil.async(() -> {
+            bankAccountRepository.deleteById(id);
+            return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+        });
     }
 }

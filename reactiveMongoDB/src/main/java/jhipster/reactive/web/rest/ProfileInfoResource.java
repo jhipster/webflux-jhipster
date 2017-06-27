@@ -1,11 +1,14 @@
 package jhipster.reactive.web.rest;
 
-import jhipster.reactive.config.DefaultProfileUtil;
-
 import io.github.jhipster.config.JHipsterProperties;
-
+import jhipster.reactive.config.DefaultProfileUtil;
+import jhipster.reactive.web.rest.util.AsyncUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,15 +25,20 @@ public class ProfileInfoResource {
 
     private final JHipsterProperties jHipsterProperties;
 
+    @Autowired
+    private AsyncUtil asyncUtil;
+
     public ProfileInfoResource(Environment env, JHipsterProperties jHipsterProperties) {
         this.env = env;
         this.jHipsterProperties = jHipsterProperties;
     }
 
     @GetMapping("/profile-info")
-    public ProfileInfoVM getActiveProfiles() {
-        String[] activeProfiles = DefaultProfileUtil.getActiveProfiles(env);
-        return new ProfileInfoVM(activeProfiles, getRibbonEnv(activeProfiles));
+    public Mono<ProfileInfoVM> getActiveProfiles() {
+        return asyncUtil.async(() -> {
+            String[] activeProfiles = DefaultProfileUtil.getActiveProfiles(env);
+            return new ProfileInfoVM(activeProfiles, getRibbonEnv(activeProfiles));
+        });
     }
 
     private String getRibbonEnv(String[] activeProfiles) {

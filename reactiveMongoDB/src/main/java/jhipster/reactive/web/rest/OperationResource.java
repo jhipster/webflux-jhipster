@@ -5,16 +5,19 @@ import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.ApiParam;
 import jhipster.reactive.domain.Operation;
 import jhipster.reactive.repository.OperationRepository;
+import jhipster.reactive.web.rest.util.AsyncUtil;
 import jhipster.reactive.web.rest.util.HeaderUtil;
 import jhipster.reactive.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -35,6 +38,9 @@ public class OperationResource {
 
     private final OperationRepository operationRepository;
 
+    @Autowired
+    private AsyncUtil asyncUtil;
+
     public OperationResource(OperationRepository operationRepository) {
         this.operationRepository = operationRepository;
     }
@@ -48,15 +54,17 @@ public class OperationResource {
      */
     @PostMapping("/operations")
     @Timed
-    public ResponseEntity<Operation> createOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
+    public Mono<ResponseEntity<Operation>> createOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to save Operation : {}", operation);
-        if (operation.getId() != null) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new operation cannot already have an ID")).body(null);
-        }
-        Operation result = operationRepository.save(operation);
-        return ResponseEntity.created(new URI("/api/operations/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return asyncUtil.async(() -> {
+            if (operation.getId() != null) {
+                return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new operation cannot already have an ID")).body(null);
+            }
+            Operation result = operationRepository.save(operation);
+            return ResponseEntity.created(new URI("/api/operations/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId()))
+                .body(result);
+        });
     }
 
     /**
@@ -70,15 +78,17 @@ public class OperationResource {
      */
     @PutMapping("/operations")
     @Timed
-    public ResponseEntity<Operation> updateOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
+    public Mono<ResponseEntity<Operation>> updateOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to update Operation : {}", operation);
         if (operation.getId() == null) {
             return createOperation(operation);
         }
-        Operation result = operationRepository.save(operation);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, operation.getId().toString()))
-            .body(result);
+        return asyncUtil.async(() -> {
+            Operation result = operationRepository.save(operation);
+            return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, operation.getId()))
+                .body(result);
+        });
     }
 
     /**
@@ -89,11 +99,13 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     @Timed
-    public ResponseEntity<List<Operation>> getAllOperations(@ApiParam Pageable pageable) {
+    public Mono<ResponseEntity<List<Operation>>> getAllOperations(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Operations");
-        Page<Operation> page = operationRepository.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        return asyncUtil.async(() -> {
+            Page<Operation> page = operationRepository.findAll(pageable);
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
+            return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        });
     }
 
     /**
@@ -104,10 +116,12 @@ public class OperationResource {
      */
     @GetMapping("/operations/{id}")
     @Timed
-    public ResponseEntity<Operation> getOperation(@PathVariable String id) {
+    public Mono<ResponseEntity<Operation>> getOperation(@PathVariable String id) {
         log.debug("REST request to get Operation : {}", id);
-        Optional<Operation> operation = operationRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(operation);
+        return asyncUtil.async(() -> {
+            Optional<Operation> operation = operationRepository.findById(id);
+            return ResponseUtil.wrapOrNotFound(operation);
+        });
     }
 
     /**
@@ -118,9 +132,11 @@ public class OperationResource {
      */
     @DeleteMapping("/operations/{id}")
     @Timed
-    public ResponseEntity<Void> deleteOperation(@PathVariable String id) {
+    public Mono<ResponseEntity<Void>> deleteOperation(@PathVariable String id) {
         log.debug("REST request to delete Operation : {}", id);
-        operationRepository.deleteById(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+        return asyncUtil.async(() -> {
+            operationRepository.deleteById(id);
+            return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+        });
     }
 }

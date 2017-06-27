@@ -1,10 +1,11 @@
 package jhipster.reactive.web.rest;
 
-import jhipster.reactive.service.AuditEventService;
-import jhipster.reactive.web.rest.util.PaginationUtil;
-
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.ApiParam;
+import jhipster.reactive.service.AuditEventService;
+import jhipster.reactive.web.rest.util.AsyncUtil;
+import jhipster.reactive.web.rest.util.PaginationUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -26,6 +28,9 @@ public class AuditResource {
 
     private final AuditEventService auditEventService;
 
+    @Autowired
+    private AsyncUtil asyncUtil;
+
     public AuditResource(AuditEventService auditEventService) {
         this.auditEventService = auditEventService;
     }
@@ -37,10 +42,12 @@ public class AuditResource {
      * @return the ResponseEntity with status 200 (OK) and the list of AuditEvents in body
      */
     @GetMapping
-    public ResponseEntity<List<AuditEvent>> getAll(@ApiParam Pageable pageable) {
-        Page<AuditEvent> page = auditEventService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/management/audits");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    public Mono<ResponseEntity<List<AuditEvent>>> getAll(@ApiParam Pageable pageable) {
+        return asyncUtil.async(() -> {
+            Page<AuditEvent> page = auditEventService.findAll(pageable);
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/management/audits");
+            return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        });
     }
 
     /**
@@ -52,17 +59,18 @@ public class AuditResource {
      * @return the ResponseEntity with status 200 (OK) and the list of AuditEvents in body
      */
     @GetMapping(params = {"fromDate", "toDate"})
-    public ResponseEntity<List<AuditEvent>> getByDates(
+    public Mono<ResponseEntity<List<AuditEvent>>> getByDates(
         @RequestParam(value = "fromDate") LocalDate fromDate,
         @RequestParam(value = "toDate") LocalDate toDate,
         @ApiParam Pageable pageable) {
-
-        Page<AuditEvent> page = auditEventService.findByDates(
-            fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            toDate.atStartOfDay(ZoneId.systemDefault()).plusDays(1).toInstant(),
-            pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/management/audits");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        return asyncUtil.async(() -> {
+            Page<AuditEvent> page = auditEventService.findByDates(
+                fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                toDate.atStartOfDay(ZoneId.systemDefault()).plusDays(1).toInstant(),
+                pageable);
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/management/audits");
+            return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        });
     }
 
     /**
@@ -72,7 +80,7 @@ public class AuditResource {
      * @return the ResponseEntity with status 200 (OK) and the AuditEvent in body, or status 404 (Not Found)
      */
     @GetMapping("/{id:.+}")
-    public ResponseEntity<AuditEvent> get(@PathVariable String id) {
-        return ResponseUtil.wrapOrNotFound(auditEventService.find(id));
+    public Mono<ResponseEntity<AuditEvent>> get(@PathVariable String id) {
+        return asyncUtil.async(() -> ResponseUtil.wrapOrNotFound(auditEventService.find(id)));
     }
 }
