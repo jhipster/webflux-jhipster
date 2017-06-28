@@ -4,11 +4,11 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { Ng2Webstorage } from 'ng2-webstorage';
 
-import { ReactiveMongoDbSharedModule, UserRouteAccessService } from './shared';
-import { ReactiveMongoDbHomeModule } from './home/home.module';
-import { ReactiveMongoDbAdminModule } from './admin/admin.module';
-import { ReactiveMongoDbAccountModule } from './account/account.module';
-import { ReactiveMongoDbEntityModule } from './entities/entity.module';
+import { ReporeactiveMongoDbSharedModule, UserRouteAccessService } from './shared';
+import { ReporeactiveMongoDbHomeModule } from './home/home.module';
+import { ReporeactiveMongoDbAdminModule } from './admin/admin.module';
+import { ReporeactiveMongoDbAccountModule } from './account/account.module';
+import { ReporeactiveMongoDbEntityModule } from './entities/entity.module';
 
 import { customHttpProvider } from './blocks/interceptor/http.provider';
 import { PaginationConfig } from './blocks/config/uib-pagination.config';
@@ -30,11 +30,11 @@ import {
         BrowserModule,
         LayoutRoutingModule,
         Ng2Webstorage.forRoot({ prefix: 'jhi', separator: '-'}),
-        ReactiveMongoDbSharedModule,
-        ReactiveMongoDbHomeModule,
-        ReactiveMongoDbAdminModule,
-        ReactiveMongoDbAccountModule,
-        ReactiveMongoDbEntityModule,
+        ReporeactiveMongoDbSharedModule,
+        ReporeactiveMongoDbHomeModule,
+        ReporeactiveMongoDbAdminModule,
+        ReporeactiveMongoDbAccountModule,
+        ReporeactiveMongoDbEntityModule,
         // jhipster-needle-angular-add-module JHipster will add new module here
     ],
     declarations: [
@@ -52,4 +52,4 @@ import {
     ],
     bootstrap: [ JhiMainComponent ]
 })
-export class ReactiveMongoDbAppModule {}
+export class ReporeactiveMongoDbAppModule {}

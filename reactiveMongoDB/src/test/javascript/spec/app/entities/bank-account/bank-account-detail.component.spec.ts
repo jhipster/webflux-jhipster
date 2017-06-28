@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
 import { JhiDateUtils, JhiDataUtils, JhiEventManager } from 'ng-jhipster';
-import { ReactiveMongoDbTestModule } from '../../../test.module';
+import { ReporeactiveMongoDbTestModule } from '../../../test.module';
 import { MockActivatedRoute } from '../../../helpers/mock-route.service';
 import { BankAccountDetailComponent } from '../../../../../../main/webapp/app/entities/bank-account/bank-account-detail.component';
 import { BankAccountService } from '../../../../../../main/webapp/app/entities/bank-account/bank-account.service';
@@ -19,7 +19,7 @@ describe('Component Tests', () => {
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [ReactiveMongoDbTestModule],
+                imports: [ReporeactiveMongoDbTestModule],
                 declarations: [BankAccountDetailComponent],
                 providers: [
                     JhiDateUtils,

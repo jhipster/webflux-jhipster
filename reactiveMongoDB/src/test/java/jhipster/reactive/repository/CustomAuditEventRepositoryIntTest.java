@@ -1,6 +1,6 @@
 package jhipster.reactive.repository;
 
-import jhipster.reactive.ReactiveMongoDbApp;
+import jhipster.reactive.ReporeactiveMongoDbApp;
 import jhipster.reactive.config.Constants;
 import jhipster.reactive.config.audit.AuditEventConverter;
 import jhipster.reactive.domain.PersistentAuditEvent;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see CustomAuditEventRepository
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ReactiveMongoDbApp.class)
+@SpringBootTest(classes = ReporeactiveMongoDbApp.class)
 public class CustomAuditEventRepositoryIntTest {
 
     @Autowired

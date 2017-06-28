@@ -1,6 +1,6 @@
 package jhipster.reactive.web.rest;
 
-import jhipster.reactive.ReactiveMongoDbApp;
+import jhipster.reactive.ReporeactiveMongoDbApp;
 import jhipster.reactive.domain.Authority;
 import jhipster.reactive.domain.User;
 import jhipster.reactive.repository.AuthorityRepository;
@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see AccountResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ReactiveMongoDbApp.class)
+@SpringBootTest(classes = ReporeactiveMongoDbApp.class)
 public class AccountResourceIntTest {
 
     @Autowired

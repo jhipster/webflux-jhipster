@@ -1,6 +1,6 @@
 package jhipster.reactive.web.rest;
 
-import jhipster.reactive.ReactiveMongoDbApp;
+import jhipster.reactive.ReporeactiveMongoDbApp;
 import jhipster.reactive.web.rest.vm.LoggerVM;
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.LoggerContext;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see LogsResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ReactiveMongoDbApp.class)
+@SpringBootTest(classes = ReporeactiveMongoDbApp.class)
 public class LogsResourceIntTest {
 
     private MockMvc restLogsMockMvc;

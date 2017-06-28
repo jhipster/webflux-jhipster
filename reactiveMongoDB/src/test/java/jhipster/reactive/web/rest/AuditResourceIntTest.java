@@ -1,6 +1,6 @@
 package jhipster.reactive.web.rest;
 
-import jhipster.reactive.ReactiveMongoDbApp;
+import jhipster.reactive.ReporeactiveMongoDbApp;
 import jhipster.reactive.config.audit.AuditEventConverter;
 import jhipster.reactive.domain.PersistentAuditEvent;
 import jhipster.reactive.repository.PersistenceAuditEventRepository;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see AuditResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ReactiveMongoDbApp.class)
+@SpringBootTest(classes = ReporeactiveMongoDbApp.class)
 public class AuditResourceIntTest {
 
     private static final String SAMPLE_PRINCIPAL = "SAMPLE_PRINCIPAL";

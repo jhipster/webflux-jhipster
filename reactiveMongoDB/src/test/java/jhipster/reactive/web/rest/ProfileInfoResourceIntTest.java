@@ -1,7 +1,7 @@
 package jhipster.reactive.web.rest;
 
 import io.github.jhipster.config.JHipsterProperties;
-import jhipster.reactive.ReactiveMongoDbApp;
+import jhipster.reactive.ReporeactiveMongoDbApp;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see ProfileInfoResource
  **/
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ReactiveMongoDbApp.class)
+@SpringBootTest(classes = ReporeactiveMongoDbApp.class)
 public class ProfileInfoResourceIntTest {
 
     @Mock

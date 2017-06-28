@@ -16,7 +16,7 @@
 
 spring:
     application:
-        name: reactiveMongoDB
+        name: reporeactiveMongoDB
     jackson:
         serialization.write_dates_as_timestamps: false
     cache:
@@ -25,7 +25,7 @@ spring:
         mongodb:
             host: localhost
             port: 27117
-            database: reactiveMongoDB
+            database: reporeactiveMongoDB
     mail:
         host: localhost
     messages:

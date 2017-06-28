@@ -98,7 +98,7 @@ public class UserResource {
     @Secured(AuthoritiesConstants.ADMIN)
     public Mono<ResponseEntity> createUser(@Valid @RequestBody ManagedUserVM managedUserVM) throws URISyntaxException {
         log.debug("REST request to save User : {}", managedUserVM);
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             if (managedUserVM.getId() != null) {
                 return ResponseEntity.badRequest()
                     .headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new user cannot already have an ID"))
@@ -135,7 +135,7 @@ public class UserResource {
     @Secured(AuthoritiesConstants.ADMIN)
     public Mono<ResponseEntity<UserDTO>> updateUser(@Valid @RequestBody ManagedUserVM managedUserVM) {
         log.debug("REST request to update User : {}", managedUserVM);
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             Optional<User> existingUser = userRepository.findOneByEmail(managedUserVM.getEmail());
             if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserVM.getId()))) {
                 return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "emailexists", "Email already in use")).body(null);
@@ -160,7 +160,7 @@ public class UserResource {
     @GetMapping("/users")
     @Timed
     public Mono<ResponseEntity<List<UserDTO>>> getAllUsers(@ApiParam Pageable pageable) {
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             final Page<UserDTO> page = userService.getAllManagedUsers(pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -174,7 +174,7 @@ public class UserResource {
     @Timed
     @Secured(AuthoritiesConstants.ADMIN)
     public Mono<List<String>> getAuthorities() {
-        return asyncUtil.asyncMono(userService::getAuthorities);
+        return asyncUtil.async(userService::getAuthorities);
     }
 
     /**
@@ -187,7 +187,7 @@ public class UserResource {
     @Timed
     public Mono<ResponseEntity> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
-        return asyncUtil.asyncMono(() -> ResponseUtil.wrapOrNotFound(
+        return asyncUtil.async(() -> ResponseUtil.wrapOrNotFound(
             userService.getUserWithAuthoritiesByLogin(login).map(UserDTO::new)));
     }
 
@@ -202,7 +202,7 @@ public class UserResource {
     @Secured(AuthoritiesConstants.ADMIN)
     public Mono<ResponseEntity<Void>> deleteUser(@PathVariable String login) {
         log.debug("REST request to delete User: {}", login);
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             userService.deleteUser(login);
             return ResponseEntity.ok().headers(HeaderUtil.createAlert("A user is deleted with identifier " + login, login)).build();
         });

@@ -1,5 +1,5 @@
-var dataCacheName = '"ReactiveMongoDb-v1';
-var cacheName = '"ReactiveMongoDb-1';
+var dataCacheName = '"ReporeactiveMongoDb-v1';
+var cacheName = '"ReporeactiveMongoDb-1';
 var filesToCache = [
     '/',
     '/index.html'

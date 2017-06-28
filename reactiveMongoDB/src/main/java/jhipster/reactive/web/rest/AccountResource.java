@@ -63,7 +63,7 @@ public class AccountResource {
         produces={MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
     @Timed
     public Mono<ResponseEntity> registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             HttpHeaders textPlainHeaders = new HttpHeaders();
             textPlainHeaders.setContentType(MediaType.TEXT_PLAIN);
             if (!checkPasswordLength(managedUserVM.getPassword())) {
@@ -96,7 +96,7 @@ public class AccountResource {
     @GetMapping("/activate")
     @Timed
     public Mono<ResponseEntity<String>> activateAccount(@RequestParam(value = "key") String key) {
-        return asyncUtil.asyncMono(() -> userService.activateRegistration(key)
+        return asyncUtil.async(() -> userService.activateRegistration(key)
             .map(user -> new ResponseEntity<String>(HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR)));
     }
@@ -111,7 +111,7 @@ public class AccountResource {
     @Timed
     public Mono<String> isAuthenticated(HttpServletRequest request) {
         log.debug("REST request to check if the current user is authenticated");
-        return asyncUtil.asyncMono(request::getRemoteUser);
+        return asyncUtil.async(request::getRemoteUser);
     }
 
     /**
@@ -123,7 +123,7 @@ public class AccountResource {
     @Timed
     public Mono<ResponseEntity<UserDTO>> getAccount() {
         String login = SecurityUtils.getCurrentUserLogin(); // not compatible with Webflux
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             Optional<User> u = userService.getUserWithAuthoritiesByLogin(login);
             return ResponseUtil.wrapOrNotFound(u.map(UserDTO::new));
         });
@@ -138,7 +138,7 @@ public class AccountResource {
     @PostMapping("/account")
     @Timed
     public Mono<ResponseEntity> saveAccount(@Valid @RequestBody UserDTO userDTO) {
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             final String userLogin = SecurityUtils.getCurrentUserLogin();
             Optional<User> existingUser = userRepository.findOneByEmail(userDTO.getEmail());
             if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userLogin))) {
@@ -165,7 +165,7 @@ public class AccountResource {
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
     public Mono<ResponseEntity> changePassword(@RequestBody String password) {
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             if (!checkPasswordLength(password)) {
                 return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
             }
@@ -184,7 +184,7 @@ public class AccountResource {
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
     public Mono<ResponseEntity> requestPasswordReset(@RequestBody String mail) {
-        return asyncUtil.asyncMono(() -> userService.requestPasswordReset(mail)
+        return asyncUtil.async(() -> userService.requestPasswordReset(mail)
             .map(user -> {
                 mailService.sendPasswordResetMail(user);
                 return new ResponseEntity<>("email was sent", HttpStatus.OK);
@@ -202,7 +202,7 @@ public class AccountResource {
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
     public Mono<ResponseEntity<String>> finishPasswordReset(@RequestBody KeyAndPasswordVM keyAndPassword) {
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
                 return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
             }

@@ -1,6 +1,6 @@
 package jhipster.reactive.service;
 
-import jhipster.reactive.ReactiveMongoDbApp;
+import jhipster.reactive.ReporeactiveMongoDbApp;
 import jhipster.reactive.domain.User;
 import jhipster.reactive.config.Constants;
 import jhipster.reactive.repository.UserRepository;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.*;
  * @see UserService
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ReactiveMongoDbApp.class)
+@SpringBootTest(classes = ReporeactiveMongoDbApp.class)
 public class UserServiceIntTest {
 
     @Autowired

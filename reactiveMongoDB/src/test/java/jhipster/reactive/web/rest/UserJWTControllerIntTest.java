@@ -1,6 +1,6 @@
 package jhipster.reactive.web.rest;
 
-import jhipster.reactive.ReactiveMongoDbApp;
+import jhipster.reactive.ReporeactiveMongoDbApp;
 import jhipster.reactive.domain.User;
 import jhipster.reactive.repository.UserRepository;
 import jhipster.reactive.security.jwt.TokenProvider;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see UserJWTController
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ReactiveMongoDbApp.class)
+@SpringBootTest(classes = ReporeactiveMongoDbApp.class)
 public class UserJWTControllerIntTest {
 
     @Autowired

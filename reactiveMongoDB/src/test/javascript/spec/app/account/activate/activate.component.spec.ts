@@ -1,7 +1,7 @@
 import { TestBed, async, tick, fakeAsync, inject } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
-import { ReactiveMongoDbTestModule } from '../../../test.module';
+import { ReporeactiveMongoDbTestModule } from '../../../test.module';
 import { MockActivatedRoute } from '../../../helpers/mock-route.service';
 import { LoginModalService } from '../../../../../../main/webapp/app/shared';
 import { ActivateService } from '../../../../../../main/webapp/app/account/activate/activate.service';
@@ -15,7 +15,7 @@ describe('Component Tests', () => {
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [ReactiveMongoDbTestModule],
+                imports: [ReporeactiveMongoDbTestModule],
                 declarations: [ActivateComponent],
                 providers: [
                     ActivateService,

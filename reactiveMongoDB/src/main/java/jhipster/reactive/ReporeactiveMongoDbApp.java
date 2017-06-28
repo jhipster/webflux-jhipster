@@ -22,13 +22,13 @@ import java.util.Collection;
 @ComponentScan
 @EnableAutoConfiguration(exclude = {MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class})
 @EnableConfigurationProperties({ApplicationProperties.class})
-public class ReactiveMongoDbApp {
+public class ReporeactiveMongoDbApp {
 
-    private static final Logger log = LoggerFactory.getLogger(ReactiveMongoDbApp.class);
+    private static final Logger log = LoggerFactory.getLogger(ReporeactiveMongoDbApp.class);
 
     private final Environment env;
 
-    public ReactiveMongoDbApp(Environment env) {
+    public ReporeactiveMongoDbApp(Environment env) {
         this.env = env;
     }
 
@@ -59,7 +59,7 @@ public class ReactiveMongoDbApp {
      * @throws UnknownHostException if the local host name could not be resolved into an address
      */
     public static void main(String[] args) throws UnknownHostException {
-        SpringApplication app = new SpringApplication(ReactiveMongoDbApp.class);
+        SpringApplication app = new SpringApplication(ReporeactiveMongoDbApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
         String protocol = "http";

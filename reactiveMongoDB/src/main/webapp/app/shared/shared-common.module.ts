@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
 import {
-    ReactiveMongoDbSharedLibsModule,
+    ReporeactiveMongoDbSharedLibsModule,
     JhiAlertComponent,
     JhiAlertErrorComponent
 } from './';
 
 @NgModule({
     imports: [
-        ReactiveMongoDbSharedLibsModule
+        ReporeactiveMongoDbSharedLibsModule
     ],
     declarations: [
         JhiAlertComponent,
@@ -19,9 +19,9 @@ import {
         Title
     ],
     exports: [
-        ReactiveMongoDbSharedLibsModule,
+        ReporeactiveMongoDbSharedLibsModule,
         JhiAlertComponent,
         JhiAlertErrorComponent
     ]
 })
-export class ReactiveMongoDbSharedCommonModule {}
+export class ReporeactiveMongoDbSharedCommonModule {}

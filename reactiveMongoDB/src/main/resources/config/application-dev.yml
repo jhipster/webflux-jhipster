@@ -27,7 +27,7 @@ spring:
     data:
         mongodb:
             uri: mongodb://localhost:27017
-            database: reactiveMongoDB
+            database: reporeactiveMongoDB
     mail:
         host: localhost
         port: 25
@@ -40,7 +40,7 @@ spring:
 
 # ===================================================================
 # To enable SSL, generate a certificate using:
-# keytool -genkey -alias reactiveMongoDB -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
+# keytool -genkey -alias reporeactiveMongoDB -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
 #
 # You can also use Let's Encrypt:
 # https://maximilian-boehm.com/hp2121/Create-a-Java-Keystore-JKS-from-Let-s-Encrypt-Certificates.htm
@@ -83,7 +83,7 @@ jhipster:
                 token-validity-in-seconds: 86400
                 token-validity-in-seconds-for-remember-me: 2592000
     mail: # specific JHipster mail property, for standard properties see MailProperties
-        from: reactiveMongoDB@localhost
+        from: reporeactiveMongoDB@localhost
         base-url: http://127.0.0.1:8080
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
@@ -91,7 +91,7 @@ jhipster:
             enabled: false
             host: localhost
             port: 2003
-            prefix: reactiveMongoDB
+            prefix: reporeactiveMongoDB
         prometheus: # Use the "prometheus" Maven profile to have the Prometheus dependencies
             enabled: false
             endpoint: /prometheusMetrics

@@ -1,7 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { ReactiveMongoDbSharedModule } from '../shared';
+import { ReporeactiveMongoDbSharedModule } from '../shared';
 
 import {
     Register,
@@ -21,7 +21,7 @@ import {
 
 @NgModule({
     imports: [
-        ReactiveMongoDbSharedModule,
+        ReporeactiveMongoDbSharedModule,
         RouterModule.forRoot(accountState, { useHash: true })
     ],
     declarations: [
@@ -42,4 +42,4 @@ import {
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ReactiveMongoDbAccountModule {}
+export class ReporeactiveMongoDbAccountModule {}

@@ -15,4 +15,4 @@ import { Http, BaseRequestOptions } from '@angular/http';
         }
     ]
 })
-export class ReactiveMongoDbTestModule {}
+export class ReporeactiveMongoDbTestModule {}

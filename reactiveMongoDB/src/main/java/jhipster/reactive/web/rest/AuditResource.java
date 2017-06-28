@@ -43,7 +43,7 @@ public class AuditResource {
      */
     @GetMapping
     public Mono<ResponseEntity<List<AuditEvent>>> getAll(@ApiParam Pageable pageable) {
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             Page<AuditEvent> page = auditEventService.findAll(pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/management/audits");
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -63,7 +63,7 @@ public class AuditResource {
         @RequestParam(value = "fromDate") LocalDate fromDate,
         @RequestParam(value = "toDate") LocalDate toDate,
         @ApiParam Pageable pageable) {
-        return asyncUtil.asyncMono(() -> {
+        return asyncUtil.async(() -> {
             Page<AuditEvent> page = auditEventService.findByDates(
                 fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant(),
                 toDate.atStartOfDay(ZoneId.systemDefault()).plusDays(1).toInstant(),
@@ -81,6 +81,6 @@ public class AuditResource {
      */
     @GetMapping("/{id:.+}")
     public Mono<ResponseEntity<AuditEvent>> get(@PathVariable String id) {
-        return asyncUtil.asyncMono(() -> ResponseUtil.wrapOrNotFound(auditEventService.find(id)));
+        return asyncUtil.async(() -> ResponseUtil.wrapOrNotFound(auditEventService.find(id)));
     }
 }

@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
 import { JhiDateUtils, JhiDataUtils, JhiEventManager } from 'ng-jhipster';
-import { ReactiveMongoDbTestModule } from '../../../test.module';
+import { ReporeactiveMongoDbTestModule } from '../../../test.module';
 import { MockActivatedRoute } from '../../../helpers/mock-route.service';
 import { OperationDetailComponent } from '../../../../../../main/webapp/app/entities/operation/operation-detail.component';
 import { OperationService } from '../../../../../../main/webapp/app/entities/operation/operation.service';
@@ -19,7 +19,7 @@ describe('Component Tests', () => {
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [ReactiveMongoDbTestModule],
+                imports: [ReporeactiveMongoDbTestModule],
                 declarations: [OperationDetailComponent],
                 providers: [
                     JhiDateUtils,

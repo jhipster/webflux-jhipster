@@ -37,7 +37,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
         executor.setCorePoolSize(jHipsterProperties.getAsync().getCorePoolSize());
         executor.setMaxPoolSize(jHipsterProperties.getAsync().getMaxPoolSize());
         executor.setQueueCapacity(jHipsterProperties.getAsync().getQueueCapacity());
-        executor.setThreadNamePrefix("reactive-mongo-db-Executor-");
+        executor.setThreadNamePrefix("reporeactive-mongo-db-Executor-");
         return new ExceptionHandlingAsyncTaskExecutor(executor);
     }
 

@@ -2,8 +2,8 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
 import {
-    ReactiveMongoDbSharedLibsModule,
-    ReactiveMongoDbSharedCommonModule,
+    ReporeactiveMongoDbSharedLibsModule,
+    ReporeactiveMongoDbSharedCommonModule,
     CSRFService,
     AuthServerProvider,
     AccountService,
@@ -18,8 +18,8 @@ import {
 
 @NgModule({
     imports: [
-        ReactiveMongoDbSharedLibsModule,
-        ReactiveMongoDbSharedCommonModule
+        ReporeactiveMongoDbSharedLibsModule,
+        ReporeactiveMongoDbSharedCommonModule
     ],
     declarations: [
         JhiLoginModalComponent,
@@ -38,7 +38,7 @@ import {
     ],
     entryComponents: [JhiLoginModalComponent],
     exports: [
-        ReactiveMongoDbSharedCommonModule,
+        ReporeactiveMongoDbSharedCommonModule,
         JhiLoginModalComponent,
         HasAnyAuthorityDirective,
         DatePipe
@@ -46,4 +46,4 @@ import {
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 
 })
-export class ReactiveMongoDbSharedModule {}
+export class ReporeactiveMongoDbSharedModule {}

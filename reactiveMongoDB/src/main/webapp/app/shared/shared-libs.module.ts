@@ -26,4 +26,4 @@ import { CookieModule } from 'ngx-cookie';
         InfiniteScrollModule
     ]
 })
-export class ReactiveMongoDbSharedLibsModule {}
+export class ReporeactiveMongoDbSharedLibsModule {}

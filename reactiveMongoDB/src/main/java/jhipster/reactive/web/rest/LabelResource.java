@@ -1,14 +1,13 @@
 package jhipster.reactive.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import io.github.jhipster.web.util.ResponseUtil;
 import jhipster.reactive.domain.Label;
 import jhipster.reactive.repository.LabelRepository;
+import jhipster.reactive.web.rest.errors.MyException;
 import jhipster.reactive.web.rest.util.AsyncUtil;
 import jhipster.reactive.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -17,7 +16,6 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
 
 /**
  * REST controller for managing Label.
@@ -31,9 +29,6 @@ public class LabelResource {
     private static final String ENTITY_NAME = "label";
 
     private final LabelRepository labelRepository;
-
-    @Autowired
-    private AsyncUtil asyncUtil;
 
     public LabelResource(LabelRepository labelRepository) {
         this.labelRepository = labelRepository;
@@ -50,15 +45,20 @@ public class LabelResource {
     @Timed
     public Mono<ResponseEntity<Label>> createLabel(@Valid @RequestBody Label label) throws URISyntaxException {
         log.debug("REST request to save Label : {}", label);
-        return asyncUtil.asyncMono(() -> {
-            if (label.getId() != null) {
-                return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new label cannot already have an ID")).body(null);
-            }
-            Label result = labelRepository.save(label);
-            return ResponseEntity.created(new URI("/api/labels/" + result.getId()))
-                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId()))
-                .body(result);
-        });
+        if (label.getId() != null) {
+            return Mono.just(ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new label cannot already have an ID")).body(null));
+        }
+        Mono<Label> result = labelRepository.save(label);
+        try{
+            return result.flatMap((Label savedLabel)->{
+                try{
+                    return Mono.just(ResponseEntity.created(new URI("/api/labels/" + savedLabel.getId()))
+                        .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, savedLabel.getId()))
+                        .body(savedLabel));}
+                catch(URISyntaxException e) {throw new MyException(e);}
+            });
+        }
+        catch(MyException e) {throw e.uriSyntaxException;}
     }
 
     /**
@@ -77,12 +77,13 @@ public class LabelResource {
         if (label.getId() == null) {
             return createLabel(label);
         }
-        return asyncUtil.asyncMono(() -> {
-            Label result = labelRepository.save(label);
-            return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, label.getId()))
-                .body(result);
-        });
+        Mono<Label> result = labelRepository.save(label);
+        return result.flatMap((Label savedLabel)->
+                Mono.just(ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, savedLabel.getId().toString()))
+                .body(savedLabel))
+        );
+
     }
 
     /**
@@ -94,7 +95,7 @@ public class LabelResource {
     @Timed
     public Flux<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
-        return asyncUtil.asyncFlux(labelRepository.findAll());
+        return labelRepository.findAll();
     }
 
     /**
@@ -107,10 +108,8 @@ public class LabelResource {
     @Timed
     public Mono<ResponseEntity<Label>> getLabel(@PathVariable String id) {
         log.debug("REST request to get Label : {}", id);
-        return asyncUtil.asyncMono(() -> {
-            Optional<Label> label = labelRepository.findById(id);
-            return ResponseUtil.wrapOrNotFound(label);
-        });
+        Mono<Label> label = labelRepository.findById(id);
+        return AsyncUtil.wrapOrNotFound(label);
     }
 
     /**
@@ -123,9 +122,10 @@ public class LabelResource {
     @Timed
     public Mono<ResponseEntity<Void>> deleteLabel(@PathVariable String id) {
         log.debug("REST request to delete Label : {}", id);
-        return asyncUtil.asyncMono(() -> {
-            labelRepository.deleteById(id);
-            return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
-        });
+        return labelRepository.findById(id).
+            flatMap(savedLabel -> labelRepository.deleteById(id)).
+            flatMap(savedLabel ->
+                Mono.just(ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build())
+            );
     }
 }
