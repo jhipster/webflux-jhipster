@@ -56,7 +56,7 @@ public class OperationResource {
     @Timed
     public Mono<ResponseEntity<Operation>> createOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to save Operation : {}", operation);
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             if (operation.getId() != null) {
                 return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new operation cannot already have an ID")).body(null);
             }
@@ -83,7 +83,7 @@ public class OperationResource {
         if (operation.getId() == null) {
             return createOperation(operation);
         }
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             Operation result = operationRepository.save(operation);
             return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, operation.getId()))
@@ -101,7 +101,7 @@ public class OperationResource {
     @Timed
     public Mono<ResponseEntity<List<Operation>>> getAllOperations(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Operations");
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             Page<Operation> page = operationRepository.findAll(pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -118,7 +118,7 @@ public class OperationResource {
     @Timed
     public Mono<ResponseEntity<Operation>> getOperation(@PathVariable String id) {
         log.debug("REST request to get Operation : {}", id);
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             Optional<Operation> operation = operationRepository.findById(id);
             return ResponseUtil.wrapOrNotFound(operation);
         });
@@ -134,7 +134,7 @@ public class OperationResource {
     @Timed
     public Mono<ResponseEntity<Void>> deleteOperation(@PathVariable String id) {
         log.debug("REST request to delete Operation : {}", id);
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             operationRepository.deleteById(id);
             return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
         });

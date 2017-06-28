@@ -11,12 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,7 +50,7 @@ public class BankAccountResource {
     @Timed
     public Mono<ResponseEntity<BankAccount>> createBankAccount(@Valid @RequestBody BankAccount bankAccount) throws URISyntaxException {
         log.debug("REST request to save BankAccount : {}", bankAccount);
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             if (bankAccount.getId() != null) {
                 return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new bankAccount cannot already have an ID")).body(null);
             }
@@ -77,7 +77,7 @@ public class BankAccountResource {
         if (bankAccount.getId() == null) {
             return createBankAccount(bankAccount);
         }
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             BankAccount result = bankAccountRepository.save(bankAccount);
             return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bankAccount.getId()))
@@ -92,9 +92,9 @@ public class BankAccountResource {
      */
     @GetMapping("/bank-accounts")
     @Timed
-    public Mono<List<BankAccount>> getAllBankAccounts() {
+    public Flux<BankAccount> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
-        return asyncUtil.async(bankAccountRepository::findAll);
+        return asyncUtil.asyncFlux(bankAccountRepository.findAll());
     }
 
     /**
@@ -107,7 +107,7 @@ public class BankAccountResource {
     @Timed
     public Mono<ResponseEntity<BankAccount>> getBankAccount(@PathVariable String id) {
         log.debug("REST request to get BankAccount : {}", id);
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
             return ResponseUtil.wrapOrNotFound(bankAccount);
         });
@@ -123,7 +123,7 @@ public class BankAccountResource {
     @Timed
     public Mono<ResponseEntity<Void>> deleteBankAccount(@PathVariable String id) {
         log.debug("REST request to delete BankAccount : {}", id);
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             bankAccountRepository.deleteById(id);
             return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
         });
