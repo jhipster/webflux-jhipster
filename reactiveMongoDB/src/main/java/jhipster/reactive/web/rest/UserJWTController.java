@@ -50,7 +50,7 @@ public class UserJWTController {
     @PostMapping("/authenticate")
     @Timed
     public Mono<ResponseEntity> authorize(@Valid @RequestBody LoginVM loginVM, HttpServletResponse response) {
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginVM.getUsername(), loginVM.getPassword());
 

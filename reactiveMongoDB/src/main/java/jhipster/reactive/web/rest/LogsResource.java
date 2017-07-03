@@ -27,7 +27,7 @@ public class LogsResource {
     @GetMapping("/logs")
     @Timed
     public Mono<List<LoggerVM>> getList() {
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             return context.getLoggerList()
                 .stream()
@@ -40,7 +40,7 @@ public class LogsResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Timed
     public void changeLevel(@RequestBody LoggerVM jsonLogger) {
-        asyncUtil.async(() -> {
+        asyncUtil.asyncMono(() -> {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             context.getLogger(jsonLogger.getName()).setLevel(Level.valueOf(jsonLogger.getLevel()));
             return null;

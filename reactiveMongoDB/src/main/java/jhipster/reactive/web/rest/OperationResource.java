@@ -1,7 +1,6 @@
 package jhipster.reactive.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.ApiParam;
 import jhipster.reactive.domain.Operation;
 import jhipster.reactive.repository.OperationRepository;
@@ -11,20 +10,17 @@ import jhipster.reactive.web.rest.util.HeaderUtil;
 import jhipster.reactive.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * REST controller for managing Operation.
@@ -93,24 +89,6 @@ public class OperationResource {
             .body(savedOperation)));
     }
 
-//    /**
-//     * GET  /operations : get all the operations.
-//     *
-//     * @param pageable the pagination information
-//     * @return the ResponseEntity with status 200 (OK) and the list of operations in body
-//     */
-//    @GetMapping("/operations")
-//    @Timed
-//    public Mono<ResponseEntity<List<Operation>>> getAllOperations(@ApiParam Pageable pageable) {
-//        log.debug("REST request to get a page of Operations");
-//        Mono<Page<Operation>> page = operationRepository.findAll(pageable);
-//        Mono<HttpHeaders> headers = AsyncUtil.generatePaginationHttpHeaders(page, "/api/operations");
-//        return Mono.when(page,headers,
-//                            (savedPage,savedHeaders)->{
-//                                return new ResponseEntity<List<Operation>>(savedPage.getContent(), savedHeaders, HttpStatus.OK);
-//                            }
-//                        );
-//    }
 
     /**
      * GET  /operations : get all the operations.
@@ -120,9 +98,17 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     @Timed
-    public Flux<Operation> getAllOperations(@ApiParam Pageable pageable) {
+    public Mono<ResponseEntity<List<Operation>>> getAllOperations(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Operations");
-        return operationRepository.findAll();
+
+        Mono<List<Operation>> flux = operationRepository.findAllBy(pageable).collectList();
+        Mono<Long> size = operationRepository.count();
+
+        return Mono.when(flux,size).flatMap((Tuple2 tuple2)-> {
+            List list = (List) tuple2.getT1();
+            Long totalNumber = (Long) tuple2.getT2();
+            return Mono.just(new ResponseEntity<>(list, PaginationUtil.generatePaginationHttpHeaders(pageable,list,totalNumber,"/api/operations"), HttpStatus.OK));
+        });
     }
 
     /**

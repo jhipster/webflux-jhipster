@@ -35,7 +35,7 @@ public class ProfileInfoResource {
 
     @GetMapping("/profile-info")
     public Mono<ProfileInfoVM> getActiveProfiles() {
-        return asyncUtil.async(() -> {
+        return asyncUtil.asyncMono(() -> {
             String[] activeProfiles = DefaultProfileUtil.getActiveProfiles(env);
             return new ProfileInfoVM(activeProfiles, getRibbonEnv(activeProfiles));
         });

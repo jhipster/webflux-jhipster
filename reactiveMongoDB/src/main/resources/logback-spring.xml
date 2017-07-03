@@ -51,6 +51,7 @@
     <logger name="springfox" level="WARN"/>
     <logger name="sun.rmi" level="WARN"/>
     <logger name="sun.rmi.transport" level="WARN"/>
+    <logger name="org.springframework.data" level="DEBUG"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
