@@ -92,6 +92,7 @@ public class OperationResource {
 
     /**
      * GET  /operations : get all the operations.
+     * Two calls to the database are performed.
      *
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of operations in body
