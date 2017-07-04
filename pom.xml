@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>jhipster.reactive</groupId>
+    <artifactId>webflux-jhipster</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <name>Multi Spring Bench Parent Project</name>
+
+    <modules>
+        <!-- TODO Add here your submodules in your own branches, but don't commit this file -->
+        <module>defaultSpring4</module>
+        <module>defaultSpring5</module>
+        <module>reactiveMysql</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <defaultGoal>package</defaultGoal>
+    </build>
+
+</project>
