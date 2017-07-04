@@ -9,9 +9,8 @@
     <name>Multi Spring Bench Parent Project</name>
 
     <modules>
-        <module>defaultSample</module>
+        <module>defaultCassandra</module>
         <!-- TODO Add here your submodules in your own branches, but don't commit this file -->
-        <module>reactiveMongoDB</module>
     </modules>
 
     <properties>
