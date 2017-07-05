@@ -9,8 +9,9 @@
     <name>Multi Spring Bench Parent Project</name>
 
     <modules>
-        <module>defaultCassandra</module>
+        <module>defaultCassandraSpring4</module>
         <!-- TODO Add here your submodules in your own branches, but don't commit this file -->
+        <module>defaultCassandraSpring5</module>
     </modules>
 
     <properties>
