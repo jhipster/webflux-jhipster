@@ -1,0 +1,10 @@
+{
+  "simulation": "BankAccountGatlingTest",
+  "simulationId": "bankaccountgatlingtest",
+  "start": 1499254687400,
+  "description": "null",
+  "scenarios": ["Users"],
+  "assertions": [
+
+  ]
+}
