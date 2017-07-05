@@ -85,14 +85,24 @@
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
 
         <!-- Spring properties -->
+        <spring-cloud.version>Finchley.BUILD-SNAPSHOT</spring-cloud.version>
         <springfox.version>2.7.0</springfox.version>
         <yarn.version>v0.24.6</yarn.version>
-
-        <spring-cloud.version>Finchley.BUILD-SNAPSHOT</spring-cloud.version>
     </properties>
 
 
     <dependencies>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <version>${gatling.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.github.jhipster</groupId>
             <artifactId>jhipster</artifactId>
@@ -194,12 +204,6 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.gatling.highcharts</groupId>
-            <artifactId>gatling-charts-highcharts</artifactId>
-            <version>${gatling.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -348,13 +352,19 @@
         <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
             <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>${scala-maven-plugin.version}</version>
+            </plugin>
+            <plugin>
                 <groupId>io.gatling</groupId>
                 <artifactId>gatling-maven-plugin</artifactId>
                 <version>${gatling-maven-plugin.version}</version>
                 <configuration>
                     <configFolder>src/test/gatling/conf</configFolder>
                     <dataFolder>src/test/gatling/user-files/data</dataFolder>
-                    <resultsFolder>gatling-results/</resultsFolder>
+                    <resultsFolder>gatling-results/${maven.build.timestamp}</resultsFolder>
+                    <bodiesFolder>src/test/gatling/user-files/bodies</bodiesFolder>
                     <simulationsFolder>src/test/gatling/user-files/simulations</simulationsFolder>
                     <!--
                     This will run multiple simulations one by one. Useful when doing Gatling
@@ -367,6 +377,13 @@
                     -->
                     <!--<simulationClass>WriteTheNameOfYourGatlingSimulation</simulationClass>-->
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

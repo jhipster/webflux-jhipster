@@ -207,12 +207,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.gatling.highcharts</groupId>
-            <artifactId>gatling-charts-highcharts</artifactId>
-            <version>${gatling.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jzlib</artifactId>
             <version>${jzlib.version}</version>
@@ -365,7 +359,8 @@
                 <configuration>
                     <configFolder>src/test/gatling/conf</configFolder>
                     <dataFolder>src/test/gatling/user-files/data</dataFolder>
-                    <resultsFolder>gatling-results/</resultsFolder>
+                    <resultsFolder>gatling-results/${maven.build.timestamp}</resultsFolder>
+                    <bodiesFolder>src/test/gatling/user-files/bodies</bodiesFolder>
                     <simulationsFolder>src/test/gatling/user-files/simulations</simulationsFolder>
                     <!--
                     This will run multiple simulations one by one. Useful when doing Gatling
