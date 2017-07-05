@@ -12,6 +12,7 @@
         <module>defaultCassandraSpring4</module>
         <!-- TODO Add here your submodules in your own branches, but don't commit this file -->
         <module>defaultCassandraSpring5</module>
+        <module>reactiveCassandra</module>
     </modules>
 
     <properties>
