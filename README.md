@@ -1,0 +1,1 @@
+# Reactive JHipster study project
