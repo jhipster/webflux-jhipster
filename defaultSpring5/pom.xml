@@ -386,7 +386,7 @@
                 <configuration>
                     <configFolder>src/test/gatling/conf</configFolder>
                     <dataFolder>src/test/gatling/user-files/data</dataFolder>
-                    <resultsFolder>gatling-results/</resultsFolder>
+                    <resultsFolder>gatling-results/${maven.build.timestamp}</resultsFolder>
                     <simulationsFolder>src/test/gatling/user-files/simulations</simulationsFolder>
                     <!--
                     This will run multiple simulations one by one. Useful when doing Gatling

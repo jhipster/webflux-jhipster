@@ -68,7 +68,7 @@ class OperationGatlingTest extends Simulation {
             .exec(http("Create new operation")
             .post("/api/operations")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "date":"2020-01-01T00:00:00.000Z", "description":"SAMPLE_TEXT", "amount":null}""")).asJSON
+            .body(StringBody("""{"id":null, "date":"2020-01-01T00:00:00.000Z", "description":"SAMPLE_TEXT", "amount":"1"}""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_operation_url"))).exitHereIfFailed
             .pause(10)
