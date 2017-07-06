@@ -95,6 +95,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-transport-native-epoll</artifactId>
+            <version>LATEST</version>
             <scope>test</scope>
         </dependency>
         <dependency>

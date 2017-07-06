@@ -95,6 +95,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-transport-native-epoll</artifactId>
+            <version>LATEST</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -723,6 +724,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>install node and yarn</id>
