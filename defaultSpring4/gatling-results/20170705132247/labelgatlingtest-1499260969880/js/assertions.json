@@ -1,0 +1,10 @@
+{
+  "simulation": "LabelGatlingTest",
+  "simulationId": "labelgatlingtest",
+  "start": 1499260969880,
+  "description": "null",
+  "scenarios": ["Users"],
+  "assertions": [
+
+  ]
+}
