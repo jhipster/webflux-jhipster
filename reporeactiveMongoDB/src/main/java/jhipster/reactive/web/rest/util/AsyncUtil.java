@@ -36,7 +36,7 @@ public class AsyncUtil {
     }
 
     public static <X> Mono<ResponseEntity<X>> wrapOrNotFound(Mono<X> maybeResponse, HttpHeaders header) {
-        return maybeResponse.flatMap(response -> Mono.just(ResponseEntity.ok().headers(header).body(response)))
+        return maybeResponse.map(response -> ResponseEntity.ok().headers(header).body(response))
             .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

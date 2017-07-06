@@ -4,7 +4,6 @@ import com.codahale.metrics.annotation.Timed;
 import io.swagger.annotations.ApiParam;
 import jhipster.reactive.domain.Operation;
 import jhipster.reactive.repository.OperationRepository;
-import jhipster.reactive.web.rest.errors.ReactiveException;
 import jhipster.reactive.web.rest.util.AsyncUtil;
 import jhipster.reactive.web.rest.util.HeaderUtil;
 import jhipster.reactive.web.rest.util.PaginationUtil;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -54,16 +52,10 @@ public class OperationResource {
             return Mono.just(ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new operation cannot already have an ID")).body(null));
         }
         Mono<Operation> result = operationRepository.save(operation);
-        try{
-            return result.flatMap((Operation savedOperation)->{
-                try{
-                    return Mono.just(ResponseEntity.created(new URI("/api/operations/" + savedOperation.getId()))
-                        .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, savedOperation.getId()))
-                        .body(savedOperation));}
-                catch(URISyntaxException e) {throw new ReactiveException(e);}
-            });
-        }
-        catch(ReactiveException e) {throw e.uriSyntaxException;}
+        return result.map((Operation savedOperation) ->
+            ResponseEntity.created(URI.create("/api/operations/" + savedOperation.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, savedOperation.getId()))
+                .body(savedOperation));
     }
 
     /**
@@ -83,10 +75,10 @@ public class OperationResource {
             return createOperation(operation);
         }
         Mono<Operation> result = operationRepository.save(operation);
-        return result.flatMap((Operation savedOperation)->
-            Mono.just(ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, savedOperation.getId()))
-            .body(savedOperation)));
+        return result.map((Operation savedOperation) ->
+            ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, savedOperation.getId()))
+                .body(savedOperation));
     }
 
 
@@ -105,11 +97,8 @@ public class OperationResource {
         Mono<List<Operation>> flux = operationRepository.findAllBy(pageable).collectList();
         Mono<Long> size = operationRepository.count();
 
-        return Mono.when(flux,size).flatMap((Tuple2 tuple2)-> {
-            List list = (List) tuple2.getT1();
-            Long totalNumber = (Long) tuple2.getT2();
-            return Mono.just(new ResponseEntity<>(list, PaginationUtil.generatePaginationHttpHeaders(pageable,list,totalNumber,"/api/operations"), HttpStatus.OK));
-        });
+        return Mono.when(flux, size, (List<Operation> list, Long totalNumber) ->
+            new ResponseEntity<>(list, PaginationUtil.generatePaginationHttpHeaders(pageable,list,totalNumber,"/api/operations"), HttpStatus.OK));
     }
 
     /**
@@ -136,10 +125,10 @@ public class OperationResource {
     @Timed
     public Mono<ResponseEntity<Void>> deleteOperation(@PathVariable String id) {
         log.debug("REST request to delete Operation : {}", id);
-        return operationRepository.findById(id).
-            flatMap(savedOperation -> operationRepository.deleteById(id)).
-            flatMap(savedOperation ->
-                Mono.just(ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build())
-            );
+        return operationRepository.findById(id)
+            .map(savedOperation -> {
+                operationRepository.deleteById(id);
+                return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+            });
     }
 }
