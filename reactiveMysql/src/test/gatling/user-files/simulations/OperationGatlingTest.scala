@@ -15,7 +15,7 @@ class OperationGatlingTest extends Simulation {
     // Log all HTTP requests
     //context.getLogger("io.gatling.http").setLevel(Level.valueOf("TRACE"))
     // Log failed HTTP requests
-    //context.getLogger("io.gatling.http").setLevel(Level.valueOf("DEBUG"))
+    context.getLogger("io.gatling.http").setLevel(Level.valueOf("OFF"))
 
     val baseURL = Option(System.getProperty("baseURL")) getOrElse """http://127.0.0.1:8080"""
 
@@ -85,6 +85,8 @@ class OperationGatlingTest extends Simulation {
         }
 
     val users = scenario("Users").exec(scn)
+
+        println("(LabelTest) ===> " + Integer.getInteger("users", 100) + " users.")
 
     setUp(
         users.inject(rampUsers(100) over (1 minutes))
