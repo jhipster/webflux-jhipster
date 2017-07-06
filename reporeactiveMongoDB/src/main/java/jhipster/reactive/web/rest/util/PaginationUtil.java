@@ -1,8 +1,11 @@
 package jhipster.reactive.web.rest.util;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 /**
  * Utility class for handling pagination.
@@ -39,7 +42,32 @@ public final class PaginationUtil {
         return headers;
     }
 
-    private static String generateUri(String baseUrl, int page, int size) {
+    public static <T> HttpHeaders generatePaginationHttpHeaders(Pageable pageable, List list, Long totalNumber, String baseUrl) {
+
+        HttpHeaders headers = new HttpHeaders();
+        int totalPages = Math.toIntExact(totalNumber/pageable.getPageSize()+1);
+
+        headers.add("X-Total-Count", Long.toString(list.size()));
+        String link = "";
+        if ((pageable.getPageNumber() + 1) < totalPages) {
+            link = "<" + PaginationUtil.generateUri(baseUrl, pageable.getPageNumber() + 1, list.size()) + ">; rel=\"next\",";
+        }
+        // prev link
+        if ((pageable.getPageNumber()) > 0) {
+            link += "<" + PaginationUtil.generateUri(baseUrl, pageable.getPageNumber() - 1, list.size()) + ">; rel=\"prev\",";
+        }
+        // last and first link
+        int lastPage = 0;
+        if (totalPages > 0) {
+            lastPage = totalPages - 1;
+        }
+        link += "<" + PaginationUtil.generateUri(baseUrl, lastPage, list.size()) + ">; rel=\"last\",";
+        link += "<" + PaginationUtil.generateUri(baseUrl, 0, list.size()) + ">; rel=\"first\"";
+        headers.add(HttpHeaders.LINK, link);
+        return headers;
+    }
+
+    static String generateUri(String baseUrl, int page, int size) {
         return UriComponentsBuilder.fromUriString(baseUrl).queryParam("page", page).queryParam("size", size).toUriString();
     }
 }

@@ -1,7 +1,7 @@
 package jhipster.reactive.repository;
 
 import jhipster.reactive.domain.BankAccount;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface BankAccountRepository extends MongoRepository<BankAccount,String> {
+public interface BankAccountRepository extends ReactiveMongoRepository<BankAccount,String> {
 
 }
