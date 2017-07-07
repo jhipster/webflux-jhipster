@@ -12,7 +12,6 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 @Component
@@ -37,8 +36,9 @@ public class AsyncUtil {
     }
 
     public static <X> Mono<ResponseEntity<X>> wrapOrNotFound(Mono<X> maybeResponse, HttpHeaders header) {
-        return maybeResponse.flatMap(response -> Mono.just(ResponseEntity.ok().headers(header).body(response)))
-            .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return maybeResponse.map(response ->
+            ResponseEntity.ok().headers(header)
+                .body(response)).defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 
