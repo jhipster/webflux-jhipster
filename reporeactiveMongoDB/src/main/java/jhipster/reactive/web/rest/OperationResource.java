@@ -127,7 +127,7 @@ public class OperationResource {
         log.debug("REST request to delete Operation : {}", id);
         return operationRepository.findById(id)
             .map(savedOperation -> {
-                operationRepository.deleteById(id);
+                operationRepository.deleteById(id).subscribe();
                 return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
             });
     }
