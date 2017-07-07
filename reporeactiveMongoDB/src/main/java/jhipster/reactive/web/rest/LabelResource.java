@@ -115,8 +115,9 @@ public class LabelResource {
     @Timed
     public Mono<ResponseEntity<Void>> deleteLabel(@PathVariable String id) {
         log.debug("REST request to delete Label : {}", id);
-        return labelRepository.findById(id).map(savedLabel ->
-            ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build()
-        );
+        return labelRepository.findById(id).map(savedLabel -> {
+            labelRepository.deleteById(id).subscribe();
+            return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+        });
     }
 }

@@ -116,7 +116,7 @@ public class BankAccountResource {
         log.debug("REST request to delete BankAccount : {}", id);
         return bankAccountRepository.findById(id)
             .map(savedBankAccount -> {
-                bankAccountRepository.deleteById(id);
+                bankAccountRepository.deleteById(id).subscribe();
                 return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
             });
     }
