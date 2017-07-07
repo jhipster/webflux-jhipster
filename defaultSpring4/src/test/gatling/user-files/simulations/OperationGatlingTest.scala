@@ -86,7 +86,7 @@ class OperationGatlingTest extends Simulation {
 
     val users = scenario("Users").exec(scn)
 
-        println("(LabelTest) ===> " + Integer.getInteger("users", 100) + " users.")
+        println("(OperationTest) ===> " + Integer.getInteger("users", 100) + " users.")
 
     setUp(
         users.inject(rampUsers(100) over (1 minutes))
