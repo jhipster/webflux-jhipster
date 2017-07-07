@@ -32,7 +32,7 @@ import com.datastax.driver.extras.codecs.jdk8.ZonedDateTimeCodec;
 @Configuration
 @EnableConfigurationProperties(CassandraProperties.class)
 @Profile({JHipsterConstants.SPRING_PROFILE_DEVELOPMENT, JHipsterConstants.SPRING_PROFILE_PRODUCTION})
-public class CassandraConfiguration {
+public class CassandraConfiguration{
 
     @Value("${spring.data.cassandra.protocolVersion:V4}")
     private ProtocolVersion protocolVersion;

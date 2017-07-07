@@ -13,6 +13,7 @@
         <!-- TODO Add here your submodules in your own branches, but don't commit this file -->
         <module>defaultCassandraSpring5</module>
         <module>reactiveCassandra</module>
+        <module>reporeactiveCassandra</module>
     </modules>
 
     <properties>

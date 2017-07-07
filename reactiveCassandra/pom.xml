@@ -83,7 +83,7 @@
         <sonar.sources>${project.basedir}/src/main/</sonar.sources>
         <sonar.surefire.reportsPath>${project.testresult.directory}/surefire-reports</sonar.surefire.reportsPath>
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
-
+        <spring-cloud.version>Finchley.BUILD-SNAPSHOT</spring-cloud.version>
         <!-- Spring properties -->
         <springfox.version>2.7.0</springfox.version>
         <yarn.version>v0.24.6</yarn.version>
@@ -91,6 +91,12 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <scope>test</scope>
+            <version>LATEST</version>
+        </dependency>
         <dependency>
             <groupId>io.github.jhipster</groupId>
             <artifactId>jhipster</artifactId>
@@ -364,6 +370,11 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-cassandra</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
     </dependencies>

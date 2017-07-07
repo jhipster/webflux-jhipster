@@ -1,0 +1,22 @@
+version: '2'
+services:
+    defaultcassandra-cassandra:
+        image: cassandra:3.9
+        # volumes:
+        #     - ~/volumes/jhipster/defaultCassandra/cassandra/:/var/lib/cassandra/data
+        ports:
+            - 7000:7000
+            - 7001:7001
+            - 7199:7199
+            - 9042:9042
+            - 9160:9160
+    defaultcassandra-cassandra-node:
+        image: cassandra:3.9
+        environment:
+            - CASSANDRA_SEEDS=defaultcassandra-cassandra
+    defaultcassandra-cassandra-migration:
+        extends:
+            file: cassandra-migration.yml
+            service: defaultcassandra-cassandra-migration
+        environment:
+            - CREATE_KEYSPACE_SCRIPT=create-keyspace-prod.cql
