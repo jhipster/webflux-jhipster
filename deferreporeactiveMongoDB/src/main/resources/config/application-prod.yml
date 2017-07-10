@@ -22,7 +22,7 @@ spring:
     data:
         mongodb:
             uri: mongodb://localhost:27017
-            database: reporeactiveMongoDB
+            database: deferreporeactiveMongoDB
     mail:
         host: localhost
         port: 25

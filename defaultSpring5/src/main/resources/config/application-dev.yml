@@ -27,7 +27,7 @@ spring:
     data:
         mongodb:
             uri: mongodb://localhost:27017
-            database: defaultMongoDB
+            database: defaultMongoDBSpring5
     mail:
         host: localhost
         port: 25

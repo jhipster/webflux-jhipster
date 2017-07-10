@@ -85,7 +85,7 @@
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
 
         <!-- Spring properties -->
-        <springfox.version>2.6.1</springfox.version>
+        <springfox.version>2.7.0</springfox.version>
         <yarn.version>v0.24.6</yarn.version>
     </properties>
 
