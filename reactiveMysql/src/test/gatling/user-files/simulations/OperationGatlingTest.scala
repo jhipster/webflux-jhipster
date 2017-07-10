@@ -55,7 +55,7 @@ class OperationGatlingTest extends Simulation {
         .check(header.get("Authorization").saveAs("access_token"))).exitHereIfFailed
         .pause(1)
         .repeat(2) {
-            .exec(http("Authenticated request")
+            exec(http("Authenticated request")
             .get("/api/account")
             .headers(headers_http_authenticated)
             .check(status.is(200)))
@@ -91,6 +91,6 @@ class OperationGatlingTest extends Simulation {
     println("(OperationTest) ===> " + Integer.getInteger("users", 100) + " users.")
 
     setUp(
-        users.inject(rampUsers(100) over (1 minutes))
+        users.inject(rampUsers(Integer.getInteger("users", 100)) over (Integer.getInteger("ramp", 1) minutes))
     ).protocols(httpConf)
 }
