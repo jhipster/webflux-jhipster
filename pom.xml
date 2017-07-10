@@ -13,6 +13,7 @@
         <module>defaultSpring4</module>
         <module>defaultSpring5</module>
         <module>reactiveMysql</module>
+        <module>onlyOperationReactiveMysql</module>
     </modules>
 
     <properties>
