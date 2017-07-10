@@ -13,6 +13,7 @@
         <module>defaultSpring5</module>
         <module>reactiveMongoDB</module>
         <module>reporeactiveMongoDB</module>
+        <module>deferreporeactiveMongoDB</module>
     </modules>
 
     <properties>
