@@ -21,7 +21,7 @@ public class AsyncUtil {
 
     public AsyncUtil(@Value("${jhipster.async.max-pool-size}")Integer availableThreads) {
         //this.scheduler = Schedulers.fromExecutor(Executors.newFixedThreadPool(availableThreads));
-        this.scheduler = Schedulers.parallel();
+        this.scheduler = Schedulers.elastic();
     }
 
 
