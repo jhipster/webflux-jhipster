@@ -1,4 +1,7 @@
-# defaultSample
+# defaultSpring5
+defaultSpring5 is defaultSpring4 migrated to Spring 5
+
+
 This application was generated using JHipster 4.5.5, you can find documentation and help at [https://jhipster.github.io/documentation-archive/v4.5.5](https://jhipster.github.io/documentation-archive/v4.5.5).
 
 ## Development
