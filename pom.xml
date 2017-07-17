@@ -13,10 +13,8 @@
         <module>defaultSpring5</module>
         <module>reactiveMongoDB</module>
         <module>reporeactiveMongoDB</module>
-        <module>deferreporeactiveMongoDB</module>
         <module>onlyoperationReactive</module>
         <module>onlyoperationReporeactive</module>
-        <module>onlyoperationDeferreporeactive</module>
     </modules>
 
     <properties>
