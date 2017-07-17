@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 
 /**
- * Performance test for the Operation entity.
- */
+  * Performance test for the Operation entity.
+  */
 class OperationGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]

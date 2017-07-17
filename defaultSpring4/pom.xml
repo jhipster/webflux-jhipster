@@ -379,6 +379,11 @@
                     <dataFolder>src/test/gatling/user-files/data</dataFolder>
                     <resultsFolder>gatling-results/${maven.build.timestamp}</resultsFolder>
                     <simulationsFolder>src/test/gatling/user-files/simulations</simulationsFolder>
+                    <!-- If uncommented, these arguments below will be applied to all your gatling tests -->
+                    <!--<jvmArgs>
+                        <jvmArg>-Dusers=100</jvmArg>
+                        <jvmArg>-Dramp=1</jvmArg>
+                    </jvmArgs>-->
                     <!--
                     This will run multiple simulations one by one. Useful when doing Gatling
                     tests in CI.
