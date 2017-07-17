@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 
 /**
-  * Performance test for the Label entity.
-  */
+ * Performance test for the Label entity.
+ */
 class LabelGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]

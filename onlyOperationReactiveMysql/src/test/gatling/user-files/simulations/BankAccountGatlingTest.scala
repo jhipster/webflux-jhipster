@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 
 /**
-  * Performance test for the BankAccount entity.
-  */
+ * Performance test for the BankAccount entity.
+ */
 class BankAccountGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
