@@ -122,8 +122,8 @@ public class AccountResource {
     @GetMapping("/account")
     @Timed
     public Mono<ResponseEntity<UserDTO>> getAccount() {
-        String login = SecurityUtils.getCurrentUserLogin(); // not compatible with Webflux
         return asyncUtil.asyncMono(() -> {
+            String login = SecurityUtils.getCurrentUserLogin();
             Optional<User> u = userService.getUserWithAuthoritiesByLogin(login);
             return ResponseUtil.wrapOrNotFound(u.map(UserDTO::new));
         });

@@ -20,7 +20,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
@@ -122,8 +127,8 @@ public class AccountResource {
     @GetMapping("/account")
     @Timed
     public Mono<ResponseEntity<UserDTO>> getAccount() {
-        String login = SecurityUtils.getCurrentUserLogin(); // not compatible with Webflux
         return asyncUtil.asyncMono(() -> {
+            String login = SecurityUtils.getCurrentUserLogin();
             Optional<User> u = userService.getUserWithAuthoritiesByLogin(login);
             return ResponseUtil.wrapOrNotFound(u.map(UserDTO::new));
         });
