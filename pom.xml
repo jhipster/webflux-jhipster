@@ -15,6 +15,7 @@
         <module>reporeactiveMongoDB</module>
         <module>onlyoperationReactive</module>
         <module>onlyoperationReporeactive</module>
+        <module>test</module>
     </modules>
 
     <properties>
