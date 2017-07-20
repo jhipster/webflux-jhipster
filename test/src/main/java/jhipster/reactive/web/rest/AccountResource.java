@@ -8,6 +8,7 @@ import jhipster.reactive.security.SecurityUtils;
 import jhipster.reactive.service.MailService;
 import jhipster.reactive.service.UserService;
 import jhipster.reactive.service.dto.UserDTO;
+import jhipster.reactive.web.rest.util.AsyncUtil;
 import jhipster.reactive.web.rest.util.HeaderUtil;
 import jhipster.reactive.web.rest.vm.KeyAndPasswordVM;
 import jhipster.reactive.web.rest.vm.ManagedUserVM;
@@ -18,10 +19,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Optional;
 
 /**
@@ -56,24 +62,25 @@ public class AccountResource {
     @PostMapping(path = "/register",
         produces={MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
     @Timed
-    public ResponseEntity registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
+    public Mono<ServerResponse> registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
         HttpHeaders textPlainHeaders = new HttpHeaders();
         textPlainHeaders.setContentType(MediaType.TEXT_PLAIN);
         if (!checkPasswordLength(managedUserVM.getPassword())) {
-            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
+            return ServerResponse.status(HttpStatus.BAD_REQUEST).syncBody("Incorrect password");
         }
         return userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase())
-            .map(user -> new ResponseEntity<>("login already in use", textPlainHeaders, HttpStatus.BAD_REQUEST))
-            .orElseGet(() -> userRepository.findOneByEmail(managedUserVM.getEmail()).map(user -> new ResponseEntity<>("email address already in use", textPlainHeaders, HttpStatus.BAD_REQUEST))
-                .orElseGet(() -> {
-                    User user = userService
-                        .createUser(managedUserVM.getLogin(), managedUserVM.getPassword(),
-                            managedUserVM.getFirstName(), managedUserVM.getLastName(),
-                            managedUserVM.getEmail().toLowerCase(), managedUserVM.getImageUrl(),
-                            managedUserVM.getLangKey());
-                    mailService.sendActivationEmail(user);
-                    return new ResponseEntity<>(HttpStatus.CREATED);
-                })
+            .flatMap(user -> AsyncUtil.header(ServerResponse.badRequest(), textPlainHeaders).syncBody("login already in use"))
+            .switchIfEmpty(userRepository.findOneByEmail(managedUserVM.getEmail()).map(user1 ->
+                AsyncUtil.header(ServerResponse.badRequest(), textPlainHeaders).syncBody("email address already in use"))
+                .switchIfEmpty(ServerResponse.created(URI.create("")).build().map((ServerResponse x) ->{
+                        User user2 = userService
+                            .createUser(managedUserVM.getLogin(), managedUserVM.getPassword(),
+                                managedUserVM.getFirstName(), managedUserVM.getLastName(),
+                                managedUserVM.getEmail().toLowerCase(), managedUserVM.getImageUrl(),
+                                managedUserVM.getLangKey());
+                        mailService.sendActivationEmail(user2);
+                        return x;
+                    }))
             );
     }
 
@@ -85,10 +92,10 @@ public class AccountResource {
      */
     @GetMapping("/activate")
     @Timed
-    public ResponseEntity<String> activateAccount(@RequestParam(value = "key") String key) {
+    public Mono<ServerResponse> activateAccount(@RequestParam(value = "key") String key) {
         return userService.activateRegistration(key)
-            .map(user -> new ResponseEntity<String>(HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            .flatMap(user -> ServerResponse.ok().build())
+            .switchIfEmpty(ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
     /**
@@ -99,9 +106,9 @@ public class AccountResource {
      */
     @GetMapping("/authenticate")
     @Timed
-    public String isAuthenticated(HttpServletRequest request) {
+    public Mono<String> isAuthenticated(ServerRequest request) {
         log.debug("REST request to check if the current user is authenticated");
-        return request.getRemoteUser();
+        return request.principal().map(user -> user.getName());
     }
 
     /**
@@ -111,10 +118,10 @@ public class AccountResource {
      */
     @GetMapping("/account")
     @Timed
-    public ResponseEntity<UserDTO> getAccount() {
+    public Mono<ServerResponse> getAccount() {
         String login = SecurityUtils.getCurrentUserLogin();
-        Optional<User> u = userService.getUserWithAuthoritiesByLogin(login);
-        return ResponseUtil.wrapOrNotFound(u.map(UserDTO::new));
+        Mono<User> u = userService.getUserWithAuthoritiesByLogin(login);
+        return AsyncUtil.wrapOrNotFound(u.map(UserDTO::new));
     }
 
     /**
@@ -125,20 +132,20 @@ public class AccountResource {
      */
     @PostMapping("/account")
     @Timed
-    public ResponseEntity saveAccount(@Valid @RequestBody UserDTO userDTO) {
+    public Mono<ServerResponse> saveAccount(@Valid @RequestBody UserDTO userDTO) {
         final String userLogin = SecurityUtils.getCurrentUserLogin();
-        Optional<User> existingUser = userRepository.findOneByEmail(userDTO.getEmail());
-        if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userLogin))) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("user-management", "emailexists", "Email already in use")).body(null);
-        }
-        return userRepository
-            .findOneByLogin(userLogin)
-            .map(u -> {
-                userService.updateUser(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(),
-                    userDTO.getLangKey(), userDTO.getImageUrl());
-                return new ResponseEntity(HttpStatus.OK);
-            })
-            .orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+        Mono<User> existingUser = userRepository.findOneByEmail(userDTO.getEmail());
+        return existingUser.flatMap (user -> {
+            if (!user.getLogin().equalsIgnoreCase(userLogin)) return AsyncUtil.header(ServerResponse.badRequest(), HeaderUtil.createFailureAlert("user-management", "emailexists", "Email already in use")).build();
+            else  return userRepository
+                .findOneByLogin(userLogin)
+                .flatMap(u -> {
+                    userService.updateUser(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(),
+                        userDTO.getLangKey(), userDTO.getImageUrl());
+                    return ServerResponse.ok().build();
+                })
+                .switchIfEmpty(ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+        });
     }
 
     /**
@@ -150,12 +157,12 @@ public class AccountResource {
     @PostMapping(path = "/account/change_password",
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
-    public ResponseEntity changePassword(@RequestBody String password) {
+    public Mono<ServerResponse> changePassword(@RequestBody String password) {
         if (!checkPasswordLength(password)) {
-            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
+            return ServerResponse.status(HttpStatus.BAD_REQUEST).syncBody("Incorrect password");
         }
         userService.changePassword(password);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ServerResponse.status(HttpStatus.OK).build();
     }
 
     /**
@@ -167,12 +174,12 @@ public class AccountResource {
     @PostMapping(path = "/account/reset_password/init",
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
-    public ResponseEntity requestPasswordReset(@RequestBody String mail) {
+    public Mono<ServerResponse> requestPasswordReset(@RequestBody String mail) {
         return userService.requestPasswordReset(mail)
-            .map(user -> {
+            .flatMap(user -> {
                 mailService.sendPasswordResetMail(user);
-                return new ResponseEntity<>("email was sent", HttpStatus.OK);
-            }).orElse(new ResponseEntity<>("email address not registered", HttpStatus.BAD_REQUEST));
+                return ServerResponse.status(HttpStatus.OK).syncBody("email was sent");
+            }).switchIfEmpty(ServerResponse.status(HttpStatus.BAD_REQUEST).syncBody("email address not registered"));
     }
 
     /**
@@ -185,13 +192,13 @@ public class AccountResource {
     @PostMapping(path = "/account/reset_password/finish",
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
-    public ResponseEntity<String> finishPasswordReset(@RequestBody KeyAndPasswordVM keyAndPassword) {
+    public Mono<ServerResponse> finishPasswordReset(@RequestBody KeyAndPasswordVM keyAndPassword) {
         if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
-            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
+            return ServerResponse.badRequest().syncBody("Incorrect password");
         }
         return userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey())
-            .map(user -> new ResponseEntity<String>(HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            .flatMap(user -> ServerResponse.ok().build())
+            .switchIfEmpty(ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
     private boolean checkPasswordLength(String password) {

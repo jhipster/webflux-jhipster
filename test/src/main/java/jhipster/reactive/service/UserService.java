@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -43,7 +45,7 @@ public class UserService {
         this.authorityRepository = authorityRepository;
     }
 
-    public Optional<User> activateRegistration(String key) {
+    public Mono<User> activateRegistration(String key) {
         log.debug("Activating user for activation key {}", key);
         return userRepository.findOneByActivationKey(key)
             .map(user -> {
@@ -56,7 +58,7 @@ public class UserService {
             });
     }
 
-    public Optional<User> completePasswordReset(String newPassword, String key) {
+    public Mono<User> completePasswordReset(String newPassword, String key) {
        log.debug("Reset user password for reset key {}", key);
 
        return userRepository.findOneByResetKey(key)
@@ -70,7 +72,7 @@ public class UserService {
            });
     }
 
-    public Optional<User> requestPasswordReset(String mail) {
+    public Mono<User> requestPasswordReset(String mail) {
         return userRepository.findOneByEmail(mail)
             .filter(User::getActivated)
             .map(user -> {
@@ -104,12 +106,12 @@ public class UserService {
             authorities.add(authority.get());
             newUser.setAuthorities(authorities);
         }
-        userRepository.save(newUser);
+        userRepository.save(newUser).subscribe();
         log.debug("Created Information for User: {}", newUser);
         return newUser;
     }
 
-    public User createUser(UserDTO userDTO) {
+    public Mono<User> createUser(UserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin());
         user.setFirstName(userDTO.getFirstName());
@@ -133,9 +135,8 @@ public class UserService {
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
         user.setActivated(true);
-        userRepository.save(user);
         log.debug("Created Information for User: {}", user);
-        return user;
+        return userRepository.save(user);
     }
 
     /**
@@ -148,7 +149,7 @@ public class UserService {
      * @param imageUrl image URL of user
      */
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
-        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
+        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).map(user -> {
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setEmail(email);
@@ -156,6 +157,7 @@ public class UserService {
             user.setImageUrl(imageUrl);
             userRepository.save(user);
             log.debug("Changed Information for User: {}", user);
+            return user;
         });
     }
 
@@ -165,7 +167,7 @@ public class UserService {
      * @param userDTO user to update
      * @return updated user
      */
-    public Optional<UserDTO> updateUser(UserDTO userDTO) {
+    public Mono<UserDTO> updateUser(UserDTO userDTO) {
         return userRepository.findById(userDTO.getId()).map((User user) -> {
             user.setLogin(userDTO.getLogin());
             user.setFirstName(userDTO.getFirstName());
@@ -179,42 +181,44 @@ public class UserService {
             userDTO.getAuthorities().stream()
                 .map(authorityRepository::findById)
                 .forEach(authority -> authority.ifPresent(managedAuthorities::add));
-            userRepository.save(user);
+            userRepository.save(user).subscribe();
             log.debug("Changed Information for User: {}", user);
             return user;
         }).map(UserDTO::new);
     }
 
     public void deleteUser(String login) {
-        userRepository.findOneByLogin(login).ifPresent(user -> {
-            userRepository.delete(user);
+        userRepository.findOneByLogin(login).map(user -> {
+            userRepository.delete(user).subscribe();
             log.debug("Deleted User: {}", user);
+            return  user;
         });
     }
 
     public void changePassword(String password) {
-        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
+        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).map(user -> {
             String encryptedPassword = passwordEncoder.encode(password);
             user.setPassword(encryptedPassword);
-            userRepository.save(user);
+            userRepository.save(user).subscribe();
             log.debug("Changed password for User: {}", user);
+            return user;
         });
     }
 
-    public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
+    public Flux<UserDTO> getAllManagedUsers(Pageable pageable) {
         return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
     }
 
-    public Optional<User> getUserWithAuthoritiesByLogin(String login) {
+    public Mono<User> getUserWithAuthoritiesByLogin(String login) {
         return userRepository.findOneByLogin(login);
     }
 
-    public Optional<User> getUserWithAuthorities(String id) {
+    public Mono<User> getUserWithAuthorities(String id) {
         return userRepository.findById(id);
     }
 
-    public User getUserWithAuthorities() {
-        return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).orElse(null);
+    public Mono<User> getUserWithAuthorities() {
+        return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin());
     }
 
 
@@ -226,11 +230,12 @@ public class UserService {
      */
     @Scheduled(cron = "0 0 1 * * ?")
     public void removeNotActivatedUsers() {
-        List<User> users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(Instant.now().minus(3, ChronoUnit.DAYS));
-        for (User user : users) {
+        Flux<User> users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(Instant.now().minus(3, ChronoUnit.DAYS));
+        users.flatMap(user -> {
             log.debug("Deleting not activated user {}", user.getLogin());
-            userRepository.delete(user);
-        }
+            userRepository.delete(user).subscribe();
+            return null;
+        });
     }
 
     /**

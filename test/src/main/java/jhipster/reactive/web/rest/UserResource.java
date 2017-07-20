@@ -10,6 +10,7 @@ import jhipster.reactive.security.AuthoritiesConstants;
 import jhipster.reactive.service.MailService;
 import jhipster.reactive.service.UserService;
 import jhipster.reactive.service.dto.UserDTO;
+import jhipster.reactive.web.rest.util.AsyncUtil;
 import jhipster.reactive.web.rest.util.HeaderUtil;
 import jhipster.reactive.web.rest.util.PaginationUtil;
 import jhipster.reactive.web.rest.vm.ManagedUserVM;
@@ -22,6 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -90,28 +94,23 @@ public class UserResource {
     @PostMapping("/users")
     @Timed
     @Secured(AuthoritiesConstants.ADMIN)
-    public ResponseEntity createUser(@Valid @RequestBody ManagedUserVM managedUserVM) throws URISyntaxException {
+    public Mono<ServerResponse> createUser(@Valid @RequestBody ManagedUserVM managedUserVM) throws URISyntaxException {
         log.debug("REST request to save User : {}", managedUserVM);
         if (managedUserVM.getId() != null) {
-            return ResponseEntity.badRequest()
-                .headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new user cannot already have an ID"))
-                .body(null);
+            return AsyncUtil.header(ServerResponse.badRequest(),HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new user cannot already have an ID"))
+                .build();
             // Lowercase the user login before comparing with database
-        } else if (userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase()).isPresent()) {
-            return ResponseEntity.badRequest()
-                .headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "userexists", "Login already in use"))
-                .body(null);
-        } else if (userRepository.findOneByEmail(managedUserVM.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest()
-                .headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "emailexists", "Email already in use"))
-                .body(null);
-        } else {
-            User newUser = userService.createUser(managedUserVM);
-            mailService.sendCreationEmail(newUser);
-            return ResponseEntity.created(new URI("/api/users/" + newUser.getLogin()))
-                .headers(HeaderUtil.createAlert("A user is created with identifier " + newUser.getLogin(), newUser.getLogin()))
-                .body(newUser);
-        }
+        } else return userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase())
+            .flatMap(user -> AsyncUtil.header(ServerResponse.badRequest(),HeaderUtil.createFailureAlert(ENTITY_NAME, "userexists", "Login already in use")).build())
+            .switchIfEmpty(
+                    userRepository.findOneByEmail(managedUserVM.getEmail())
+                        .flatMap(user -> AsyncUtil.header(ServerResponse.badRequest(),HeaderUtil.createFailureAlert(ENTITY_NAME, "emailexists", "Email already in use")).build())
+                        .switchIfEmpty(userService.createUser(managedUserVM).flatMap(user -> {
+                                    mailService.sendCreationEmail(user);
+                                    return AsyncUtil.header(ServerResponse.created(URI.create("/api/users/" + user.getLogin())), HeaderUtil.createAlert("A user is created with identifier " + user.getLogin(), user.getLogin())).syncBody(user);
+                                })
+                        )
+            );
     }
 
     /**
@@ -125,19 +124,23 @@ public class UserResource {
     @PutMapping("/users")
     @Timed
     @Secured(AuthoritiesConstants.ADMIN)
-    public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody ManagedUserVM managedUserVM) {
+    public Mono<ServerResponse> updateUser(@Valid @RequestBody ManagedUserVM managedUserVM) {
         log.debug("REST request to update User : {}", managedUserVM);
-        Optional<User> existingUser = userRepository.findOneByEmail(managedUserVM.getEmail());
-        if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserVM.getId()))) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "emailexists", "Email already in use")).body(null);
-        }
-        existingUser = userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase());
-        if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserVM.getId()))) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "userexists", "Login already in use")).body(null);
-        }
-        Optional<UserDTO> updatedUser = userService.updateUser(managedUserVM);
-            return ResponseUtil.wrapOrNotFound(updatedUser,
-                HeaderUtil.createAlert("A user is updated with identifier " + managedUserVM.getLogin(), managedUserVM.getLogin()));
+        Mono<User> existingUser = userRepository.findOneByEmail(managedUserVM.getEmail());
+        return existingUser.flatMap(user -> {
+            if (!user.getId().equals(managedUserVM.getId()))
+                return AsyncUtil.header(ServerResponse.badRequest(),HeaderUtil.createFailureAlert(ENTITY_NAME, "emailexists", "Email already in use")).body(null);
+            else return userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase())
+                .flatMap(user1 -> {
+                    if (!user1.getId().equals(managedUserVM.getId()))
+                        return AsyncUtil.header(ServerResponse.badRequest(),HeaderUtil.createFailureAlert(ENTITY_NAME, "userexists", "Login already in use")).body(null);
+                    else return AsyncUtil.wrapOrNotFound(
+                        userService.updateUser(managedUserVM), HeaderUtil.createAlert("A user is updated with identifier " + managedUserVM.getLogin(), managedUserVM.getLogin()));
+                })
+                .switchIfEmpty(AsyncUtil.wrapOrNotFound(
+                    userService.updateUser(managedUserVM), HeaderUtil.createAlert("A user is updated with identifier " + managedUserVM.getLogin(), managedUserVM.getLogin()))
+                );
+        });
     }
 
     /**
@@ -148,10 +151,12 @@ public class UserResource {
      */
     @GetMapping("/users")
     @Timed
-    public ResponseEntity<List<UserDTO>> getAllUsers(@ApiParam Pageable pageable) {
-        final Page<UserDTO> page = userService.getAllManagedUsers(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    public Mono<ServerResponse> getAllUsers(@ApiParam Pageable pageable) {
+        final Mono<List<UserDTO>> page = userService.getAllManagedUsers(pageable).collectList();
+        return page.flatMap(list -> ServerResponse.ok()
+                                .header("X-Total-Count", Long.toString(list.size()))
+                                .header(HttpHeaders.LINK, PaginationUtil.link(pageable, list, new Long(list.size()), "/api/users"))
+                                .syncBody(list));
     }
 
     /**
@@ -172,9 +177,9 @@ public class UserResource {
      */
     @GetMapping("/users/{login:" + Constants.LOGIN_REGEX + "}")
     @Timed
-    public ResponseEntity getUser(@PathVariable String login) {
+    public Mono<ServerResponse> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
-        return ResponseUtil.wrapOrNotFound(
+        return AsyncUtil.wrapOrNotFound(
             userService.getUserWithAuthoritiesByLogin(login).map(UserDTO::new));
     }
 
@@ -187,9 +192,11 @@ public class UserResource {
     @DeleteMapping("/users/{login:" + Constants.LOGIN_REGEX + "}")
     @Timed
     @Secured(AuthoritiesConstants.ADMIN)
-    public ResponseEntity<Void> deleteUser(@PathVariable String login) {
+    public Mono<ServerResponse> deleteUser(@PathVariable String login) {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUser(login);
-        return ResponseEntity.ok().headers(HeaderUtil.createAlert("A user is deleted with identifier " + login, login)).build();
+        return ServerResponse.ok()
+        .header("X-defaultMongoDbApp-alert", "A user is deleted with identifier " + login)
+        .header("X-defaultMongoDbApp-params", login).build();
     }
 }

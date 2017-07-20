@@ -13,7 +13,9 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
@@ -55,7 +57,15 @@ public class AsyncUtil {
             .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-
+    public static ServerResponse.BodyBuilder header(ServerResponse.BodyBuilder bodyBuilder, HttpHeaders httpHeaders){
+        ServerResponse.BodyBuilder myBodyBuilder = bodyBuilder;
+        Iterator<Map.Entry<String, List<String>>> iterator = httpHeaders.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, List<String>> entry = iterator.next();
+            myBodyBuilder = myBodyBuilder.header(entry.getKey(), entry.getValue().get(0));
+        }
+        return myBodyBuilder;
+    }
     /* === FLUX part === */
 
     public <T> Flux<T> asyncFlux(List<T> list) {
