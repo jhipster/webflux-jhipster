@@ -10,11 +10,13 @@ import jhipster.reactive.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -94,15 +96,21 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     @Timed
-    public Mono<ResponseEntity<List<Operation>>> getAllOperations(@ApiParam Pageable pageable) {
+    public Mono<ServerResponse> getAllOperations(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Operations");
 
         Mono<List<Operation>> flux = operationRepository.findAllBy(pageable).collectList();
         Mono<Long> size = operationRepository.count();
 
-        Mono<ResponseEntity<List<Operation>>> m  = Mono.when(flux, size, (List<Operation> list, Long totalNumber) ->{
-            return new ResponseEntity<>(list, PaginationUtil.generatePaginationHttpHeaders(pageable,list,totalNumber,"/api/operations"), HttpStatus.OK); });
-        return m;
+        return Mono.when(flux, size).flatMap((Tuple2 tuple) -> {
+            List<Operation> list = (List) tuple.getT1();
+            Long totalNumber = (Long) tuple.getT2();
+            return ServerResponse.ok()
+                .header("X-Total-Count", Long.toString(list.size()))
+                .header(HttpHeaders.LINK, PaginationUtil.link(pageable,list,totalNumber,"/api/operations"))
+                .syncBody(list);
+        }
+        );
     }
 
     /**
@@ -127,13 +135,15 @@ public class OperationResource {
      */
     @DeleteMapping("/operations/{id}")
     @Timed
-    public Mono<ResponseEntity<Void>> deleteOperation(@PathVariable String id) {
+    public Mono<ServerResponse> deleteOperation(@PathVariable String id) {
         log.debug("REST request to delete Operation : {}", id);
-        Mono<ResponseEntity<Void>> m = operationRepository.findById(id)
-            .map(savedOperation -> {
+        return operationRepository.findById(id)
+            .flatMap(savedOperation -> {
                 operationRepository.deleteById(id).subscribe();
-                return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+                return ServerResponse.ok()
+                    .header("X-defaultMongoDbApp-alert", "A new " + ENTITY_NAME + " is deleted with identifier " + id)
+                    .header("X-defaultMongoDbApp-params", id)
+                    .build();
             });
-        return m;
     }
 }

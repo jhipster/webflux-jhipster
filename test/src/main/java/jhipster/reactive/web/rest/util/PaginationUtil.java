@@ -67,6 +67,27 @@ public final class PaginationUtil {
         return headers;
     }
 
+    public static String link(Pageable pageable, List list, Long totalNumber, String baseUrl){
+        int totalPages = Math.toIntExact(totalNumber/pageable.getPageSize()+1);
+
+        String link = "";
+        if ((pageable.getPageNumber() + 1) < totalPages) {
+            link = "<" + PaginationUtil.generateUri(baseUrl, pageable.getPageNumber() + 1, list.size()) + ">; rel=\"next\",";
+        }
+        // prev link
+        if ((pageable.getPageNumber()) > 0) {
+            link += "<" + PaginationUtil.generateUri(baseUrl, pageable.getPageNumber() - 1, list.size()) + ">; rel=\"prev\",";
+        }
+        // last and first link
+        int lastPage = 0;
+        if (totalPages > 0) {
+            lastPage = totalPages - 1;
+        }
+        link += "<" + PaginationUtil.generateUri(baseUrl, lastPage, list.size()) + ">; rel=\"last\",";
+        link += "<" + PaginationUtil.generateUri(baseUrl, 0, list.size()) + ">; rel=\"first\"";
+        return link;
+    }
+
     static String generateUri(String baseUrl, int page, int size) {
         return UriComponentsBuilder.fromUriString(baseUrl).queryParam("page", page).queryParam("size", size).toUriString();
     }
