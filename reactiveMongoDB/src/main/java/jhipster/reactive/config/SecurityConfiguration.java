@@ -1,10 +1,9 @@
 package jhipster.reactive.config;
 
-import jhipster.reactive.security.*;
-import jhipster.reactive.security.jwt.*;
-
-import io.github.jhipster.security.*;
-
+import io.github.jhipster.security.Http401UnauthorizedEntryPoint;
+import jhipster.reactive.security.AuthoritiesConstants;
+import jhipster.reactive.security.jwt.JWTConfigurer;
+import jhipster.reactive.security.jwt.TokenProvider;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 
 @Configuration
 @EnableWebSecurity
+@EnableWebFluxSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
