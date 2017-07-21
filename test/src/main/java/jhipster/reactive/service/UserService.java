@@ -1,18 +1,16 @@
 package jhipster.reactive.service;
 
+import jhipster.reactive.config.Constants;
 import jhipster.reactive.domain.Authority;
 import jhipster.reactive.domain.User;
 import jhipster.reactive.repository.AuthorityRepository;
-import jhipster.reactive.config.Constants;
 import jhipster.reactive.repository.UserRepository;
 import jhipster.reactive.security.AuthoritiesConstants;
 import jhipster.reactive.security.SecurityUtils;
-import jhipster.reactive.service.util.RandomUtil;
 import jhipster.reactive.service.dto.UserDTO;
-
+import jhipster.reactive.service.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +20,10 @@ import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -83,7 +84,7 @@ public class UserService {
             });
     }
 
-    public User createUser(String login, String password, String firstName, String lastName, String email,
+    public Mono<User> createUser(String login, String password, String firstName, String lastName, String email,
         String imageUrl, String langKey) {
 
         User newUser = new User();
@@ -106,9 +107,8 @@ public class UserService {
             authorities.add(authority.get());
             newUser.setAuthorities(authorities);
         }
-        userRepository.save(newUser).subscribe();
         log.debug("Created Information for User: {}", newUser);
-        return newUser;
+        return userRepository.save(newUser);
     }
 
     public Mono<User> createUser(UserDTO userDTO) {

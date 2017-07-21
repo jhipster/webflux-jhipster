@@ -2,9 +2,6 @@ package jhipster.reactive.web.rest.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.web.server.HeaderBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
@@ -12,7 +9,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,26 +38,17 @@ public class AsyncUtil {
     }
 
     public static <X> Mono<ServerResponse> wrapOrNotFound(Mono<X> maybeResponse, HttpHeaders header) {
-        return maybeResponse.flatMap(response -> {
-            ArrayList<ServerResponse.BodyBuilder> conteneur = new ArrayList<>(1);
-            ServerResponse.BodyBuilder ok = ServerResponse.ok();
-            conteneur.set(0,ok);
-            if (header!=null){
-                header.forEach((key, value) ->{
-                    ServerResponse.BodyBuilder tmp = conteneur.get(0).header(key,value.get(0));
-                    conteneur.set(0,tmp);
-                });
-            }
-            return conteneur.get(0).syncBody(response);
-         })
+        return maybeResponse
+            .flatMap(response -> ServerResponse.ok().headers((headers) -> headers.addAll(header)).syncBody(response))
             .switchIfEmpty(ServerResponse.notFound().build());
     }
 
     public static ServerResponse.BodyBuilder header(ServerResponse.BodyBuilder bodyBuilder, HttpHeaders httpHeaders){
         ServerResponse.BodyBuilder myBodyBuilder = bodyBuilder;
         Iterator<Map.Entry<String, List<String>>> iterator = httpHeaders.entrySet().iterator();
+        Map.Entry<String, List<String>> entry = null;
         while (iterator.hasNext()){
-            Map.Entry<String, List<String>> entry = iterator.next();
+            entry = iterator.next();
             myBodyBuilder = myBodyBuilder.header(entry.getKey(), entry.getValue().get(0));
         }
         return myBodyBuilder;

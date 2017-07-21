@@ -1,7 +1,6 @@
 package jhipster.reactive.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import io.github.jhipster.web.util.ResponseUtil;
 import jhipster.reactive.domain.User;
 import jhipster.reactive.repository.UserRepository;
 import jhipster.reactive.security.SecurityUtils;
@@ -18,17 +17,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Optional;
 
 /**
  * REST controller for managing the current user's account.
@@ -46,7 +46,7 @@ public class AccountResource {
     private final MailService mailService;
 
     public AccountResource(UserRepository userRepository, UserService userService,
-            MailService mailService) {
+                           MailService mailService) {
 
         this.userRepository = userRepository;
         this.userService = userService;
@@ -70,17 +70,21 @@ public class AccountResource {
         }
         return userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase())
             .flatMap(user -> AsyncUtil.header(ServerResponse.badRequest(), textPlainHeaders).syncBody("login already in use"))
-            .switchIfEmpty(userRepository.findOneByEmail(managedUserVM.getEmail()).map(user1 ->
-                AsyncUtil.header(ServerResponse.badRequest(), textPlainHeaders).syncBody("email address already in use"))
-                .switchIfEmpty(ServerResponse.created(URI.create("")).build().map((ServerResponse x) ->{
-                        User user2 = userService
-                            .createUser(managedUserVM.getLogin(), managedUserVM.getPassword(),
-                                managedUserVM.getFirstName(), managedUserVM.getLastName(),
-                                managedUserVM.getEmail().toLowerCase(), managedUserVM.getImageUrl(),
-                                managedUserVM.getLangKey());
-                        mailService.sendActivationEmail(user2);
-                        return x;
-                    }))
+            .switchIfEmpty(
+                userRepository.findOneByEmail(managedUserVM.getEmail())
+                .flatMap(user1 -> AsyncUtil.header(ServerResponse.badRequest(), textPlainHeaders).syncBody("email address already in use"))
+                .switchIfEmpty( userService
+                        .createUser(managedUserVM.getLogin(),
+                            managedUserVM.getPassword(),
+                            managedUserVM.getFirstName(), managedUserVM.getLastName(),
+                            managedUserVM.getEmail().toLowerCase(), managedUserVM.getImageUrl(),
+                            managedUserVM.getLangKey())
+                        .flatMap((User registeredUser) -> {
+                            mailService.sendActivationEmail(registeredUser);
+                            return ServerResponse.created(URI.create("")).build();
+                        })
+                        .switchIfEmpty(ServerResponse.badRequest().build())
+                )
             );
     }
 

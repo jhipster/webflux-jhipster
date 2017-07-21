@@ -3,7 +3,7 @@
 //import jhipster.reactive.DefaultMongoDbApp;
 //
 //import jhipster.reactive.domain.Operation;
-//import jhipster.reactive.reactrepo.OperationRepository;
+//import jhipster.reactive.repository.OperationRepository;
 //import jhipster.reactive.web.rest.errors.ExceptionTranslator;
 //
 //import org.junit.Before;

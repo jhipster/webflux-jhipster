@@ -1,4 +1,4 @@
-package jhipster.reactive.reactrepo;
+package jhipster.reactive.repository;
 
 import jhipster.reactive.domain.Operation;
 import org.springframework.data.domain.Pageable;

@@ -3,7 +3,7 @@ package jhipster.reactive.web.rest;
 import com.codahale.metrics.annotation.Timed;
 import io.swagger.annotations.ApiParam;
 import jhipster.reactive.domain.Operation;
-import jhipster.reactive.reactrepo.OperationRepository;
+import jhipster.reactive.repository.OperationRepository;
 import jhipster.reactive.web.rest.util.AsyncUtil;
 import jhipster.reactive.web.rest.util.HeaderUtil;
 import jhipster.reactive.web.rest.util.PaginationUtil;
@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -52,7 +50,10 @@ public class OperationResource {
     public Mono<ServerResponse> createOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to save Operation : {}", operation);
         if (operation.getId() != null) {
-            return ServerResponse.badRequest().headers((a) -> HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new operation cannot already have an ID")).body(null);
+            return ServerResponse
+                .badRequest()
+                .headers(headers -> headers.addAll(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new operation cannot already have an ID")))
+                .build();
         }
         Mono<Operation> result = operationRepository.save(operation);
         return result.flatMap(op ->
@@ -81,9 +82,8 @@ public class OperationResource {
         Mono<Operation> result = operationRepository.save(operation);
         return result.flatMap((Operation savedOperation) ->
             ServerResponse.ok()
-                .header("X-defaultMongoDbApp-alert", "A new " + ENTITY_NAME + " is created with identifier " + savedOperation.getId())
-                .header("X-defaultMongoDbApp-params", savedOperation.getId())
-                .body(result, Operation.class));
+                .headers((headers) -> headers.addAll(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, savedOperation.getId())))
+                .syncBody(savedOperation));
     }
 
 
@@ -103,14 +103,13 @@ public class OperationResource {
         Mono<Long> size = operationRepository.count();
 
         return Mono.when(flux, size).flatMap((Tuple2 tuple) -> {
-            List<Operation> list = (List) tuple.getT1();
+            List list = (List) tuple.getT1();
             Long totalNumber = (Long) tuple.getT2();
             return ServerResponse.ok()
                 .header("X-Total-Count", Long.toString(list.size()))
                 .header(HttpHeaders.LINK, PaginationUtil.link(pageable,list,totalNumber,"/api/operations"))
                 .syncBody(list);
-        }
-        );
+        });
     }
 
     /**
@@ -137,13 +136,9 @@ public class OperationResource {
     @Timed
     public Mono<ServerResponse> deleteOperation(@PathVariable String id) {
         log.debug("REST request to delete Operation : {}", id);
-        return operationRepository.findById(id)
-            .flatMap(savedOperation -> {
-                operationRepository.deleteById(id).subscribe();
-                return ServerResponse.ok()
-                    .header("X-defaultMongoDbApp-alert", "A new " + ENTITY_NAME + " is deleted with identifier " + id)
-                    .header("X-defaultMongoDbApp-params", id)
-                    .build();
-            });
+        return operationRepository.findById(id).flatMap(savedOperation -> {
+            operationRepository.deleteById(id).subscribe();
+            return ServerResponse.ok().headers((headers) -> headers.addAll(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id))).build();
+        });
     }
 }
