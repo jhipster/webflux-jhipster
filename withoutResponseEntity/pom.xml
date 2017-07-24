@@ -10,10 +10,10 @@
     </parent>
 
     <groupId>jhipster.reactive</groupId>
-    <artifactId>serverResponseOnlyopeRepoReact</artifactId>
+    <artifactId>withoutResponseEntity</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Module that use ServerResponse based on OnlyOpeRepoReact code</name>
+    <name>Without ResponseEntity</name>
 
     <properties>
         <argLine>-Djava.security.egd=file:/dev/./urandom -Xmx256m</argLine>
