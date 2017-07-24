@@ -17,6 +17,7 @@
         <module>onlyoperationReporeactive</module>
         <module>withoutResponseEntity</module>
         <module>serverResponseOnlyopeRepoReact</module>
+        <module>withoutSecu</module>
     </modules>
 
     <properties>
