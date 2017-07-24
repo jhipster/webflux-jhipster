@@ -27,7 +27,7 @@ spring:
     data:
         mongodb:
             uri: mongodb://localhost:27017
-            database: onlyOperationReporeactive
+            database: onlyOperationReporeactiveWithoutSecu
     mail:
         host: localhost
         port: 25
