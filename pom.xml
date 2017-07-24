@@ -9,16 +9,21 @@
     <name>Multi Spring Bench Parent Project</name>
 
     <modules>
+        <!-- First testing part -->
         <module>defaultSpring4</module>
         <module>defaultSpring5</module>
         <module>reactiveMongoDB</module>
         <module>reporeactiveMongoDB</module>
         <module>onlyoperationReactive</module>
         <module>onlyoperationReporeactive</module>
-        <module>withoutResponseEntity</module>
+
         <module>serverResponseOnlyopeRepoReact</module>
-        <module>withoutSecu</module>
-        <module>withoutSecuOnlyoperationReporeactive</module>
+
+        <!-- Second testing part -->
+        <module>withoutSecuSpring5</module>
+        <module>withSecuWithoutResponseEntity</module>
+        <module>withoutSecuWithResponseEntity</module>
+        <module>withoutSecuWithoutResponseEntity</module>
     </modules>
 
     <properties>

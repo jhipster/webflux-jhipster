@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>jhipster.reactive</groupId>
-    <artifactId>serverResponseOnlyopeRepoReact</artifactId>
+    <artifactId>server-response-onlyope-repo-react</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Module that use ServerResponse based on OnlyOpeRepoReact code</name>
