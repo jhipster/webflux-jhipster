@@ -60,7 +60,7 @@ public class DatabaseConfiguration {
         mongobee.setDbName(mongoProperties.getDatabase());
         mongobee.setMongoTemplate(mongoTemplate);
         // package to scan for migrations
-        mongobee.setChangeLogsScanPackage("jhipster.jhipster.reactive.config.dbmigrations");
+        mongobee.setChangeLogsScanPackage("jhipster.reactive.config.dbmigrations");
         mongobee.setEnabled(true);
         return mongobee;
     }
