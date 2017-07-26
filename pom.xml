@@ -17,13 +17,15 @@
         <module>onlyoperationReactive</module>
         <module>onlyoperationReporeactive</module>
 
-        <module>serverResponseOnlyopeRepoReact</module>
-
         <!-- Second testing part -->
         <module>withoutSecuSpring5</module>
         <module>withSecuWithoutResponseEntity</module>
         <module>withoutSecuWithResponseEntity</module>
         <module>withoutSecuWithoutResponseEntity</module>
+
+        <!-- Others -->
+        <module>serverResponseOnlyopeRepoReact</module>
+        <module>jhipster462withSpringBoot2</module>
     </modules>
 
     <properties>
