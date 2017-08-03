@@ -8,3 +8,5 @@ Each module is a Jhipster app:
 As MySQL has no reactive driver, we launch methods with a thread-pool by using Mono.fromCallable(callable).publishOn(scheduler) to make it reactive (see src/main/java/jhipster/reactive/web/rest/util/AsyncUtil.java).
 
 The results of the Gatling tests can be found at the root of each module.
+
+Our article : http://blog.ippon.tech/spring-5-webflux-performance-tests/
