@@ -1,7 +1,7 @@
 # defaultSpring4
 defaultSpring4 is the app by default, in Spring 4.
 
-This application was generated using JHipster 4.5.6, you can find documentation and help at [https://jhipster.github.io/documentation-archive/v4.5.6](https://jhipster.github.io/documentation-archive/v4.5.6).
+This application was generated using JHipster 4.5.6, you can find documentation and help at [https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6](https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6).
 
 ## Development
 
@@ -135,13 +135,13 @@ For more information refer to [Using Docker and Docker-Compose][], this page als
 To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
 
 [JHipster Homepage and latest documentation]: https://jhipster.github.io
-[JHipster 4.5.6 archive]: https://jhipster.github.io/documentation-archive/v4.5.6
+[JHipster 4.5.6 archive]: https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6
 
-[Using JHipster in development]: https://jhipster.github.io/documentation-archive/v4.5.6/development/
-[Using Docker and Docker-Compose]: https://jhipster.github.io/documentation-archive/v4.5.6/docker-compose
-[Using JHipster in production]: https://jhipster.github.io/documentation-archive/v4.5.6/production/
-[Running tests page]: https://jhipster.github.io/documentation-archive/v4.5.6/running-tests/
-[Setting up Continuous Integration]: https://jhipster.github.io/documentation-archive/v4.5.6/setting-up-ci/
+[Using JHipster in development]: https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6/development/
+[Using Docker and Docker-Compose]: https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6/docker-compose
+[Using JHipster in production]: https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6/production/
+[Running tests page]: https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6/running-tests/
+[Setting up Continuous Integration]: https://jhipster.github.io/documentation-archive-v1-to-v5/v4.5.6/setting-up-ci/
 
 [Gatling]: http://gatling.io/
 [Node.js]: https://nodejs.org/
